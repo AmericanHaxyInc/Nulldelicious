@@ -111,6 +111,14 @@ for(var resource in ndcore.Json)
         app.delete('/' + resource + '/:identification', currentDelete);
     }
 }
+//api key creation mount
+app.post('/key', function(req, res)
+{
+    ndcore.authentication.createKey(req.headers, req.params.user, res.headers).then(function(key) {
+        res.status(200).send({key: key});
+    });
+});
+
 
 app.listen(8080);
 
