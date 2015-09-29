@@ -1,6 +1,6 @@
 var fs = require('fs');
 var express = require('express');
-var ndcore = require('./lib/ndcore.js');
+var ndcore = require('./lib/Ndcore.js');
 var http = require('http');
 var https = require('https');
 var app = express();
