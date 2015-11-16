@@ -118,6 +118,16 @@ app.post('/key', function(req, res)
         res.status(200).send({key: key});
     });
 });
+//specific endpoint for login requests
+app.get('/user/login', function(req, res)
+{
+    ndcore.authentication.authenticate(req.headers, 'user', 'get', res.headers).then(function(principle) {
+        res.status(200).send({response: "success"});
+    }).catch(function(error)
+    {
+        handleError(error, res);
+    });
+});
 
 
 app.listen(8080);

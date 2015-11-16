@@ -1,0 +1,123 @@
+.logo {
+  height: 150px;
+}
+.page-section {
+  float: left;
+  display: block;
+  margin: 5px 5px 5px 5px;
+  clear: both;
+}
+.nui-nav ul li:first-child {
+  background-color: #FFFFFF;
+}
+.nui-nav ul li {
+  cursor: pointer;
+  background-color: #000000;
+  color: #009E41;
+  height: 100px;
+}
+.nui-nav {
+  height: 100px;
+}
+#star-pane {
+  height: 100px;
+}
+#description-pane {
+  height: 400px;
+}
+.nui-bootstrap-footer {
+  position: absolute;
+  bottom: 50px;
+  left: 5px;
+  font-family: 'Orbitron', sans-serif;
+}
+.primary {
+  color: #009E41;
+}
+.light {
+  color: #009E41;
+}
+.oblack {
+  color: #000000;
+}
+#main-nav {
+  z-index: 3;
+  position: relative;
+  height: 170px;
+  border-bottom-style: solid;
+  border-width: 3px;
+  border-radius: 20%;
+  border-color: #000000;
+}
+.ContentBorder {
+  border-bottom-style: solid;
+  border-width: 3px;
+  border-radius: 20%;
+  border-color: #000000;
+}
+.SearchBorder {
+  border-color: #009E41;
+  border-width: 3px;
+  border-bottom-style: solid;
+}
+.navlist {
+  width: 80%;
+  float: left;
+}
+.social-list {
+  width: 20%;
+  float: right;
+}
+.social-ico {
+  height: 50px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.image-thumb {
+  height: 500px;
+}
+nav a:link {
+  color: black;
+  text-decoration: none;
+}
+nav a:hover {
+  color: #009E41;
+}
+nav li {
+  list-style: none;
+  display: inline;
+  font-size: 2.5em;
+  font-family: 'Orbitron', sans-serif;
+  margin-left: 5%;
+}
+nav li:first-child {
+  margin-left: none;
+}
+.h1 {
+  font-family: 'Homenaje', sans-serif;
+}
+.main-text {
+  font-family: 'Jura', sans-serif;
+  color: #000000;
+  font-size: 1.5em;
+}
+body p {
+  font-family: 'Jura', sans-serif;
+  color: #000000;
+  font-size: 1.5em;
+}
+body h1 {
+  font-size: 3em;
+  color: #009E41;
+  font-family: 'Orbitron', sans-serif;
+}
+body h2 {
+  font-size: 2.5em;
+  color: #009E41;
+  font-family: 'Orbitron', sans-serif;
+}
+body h3 {
+  font-size: 2.0em;
+  color: #009E41;
+  font-family: 'Orbitron', sans-serif;
+}
