@@ -1,24 +1,150 @@
+/*element styles */
+nav li:first-child {
+  margin-left: 0px;
+}
+/* end element styles*/
+/*media queries */
+/*mobile */
+@media screen and (max-width: 500px) {
+  .nui-nav ul {
+    width: 100%;
+  }
+  .nui-nav ul li {
+    color: #009E41;
+    background-color: #000000;
+    list-style: none;
+    width: 100%;
+    height: 100%;
+    display: block;
+    font-size: 2.5em;
+    font-family: 'Orbitron', sans-serif;
+    overflow: hidden;
+    text-align: center;
+    margin: 0 0 5px 0;
+    padding: 0 0 0 0;
+  }
+  .nui-nav ul li a {
+    color: #009E41;
+    background-color: #000000;
+    width: 100%;
+    display: block;
+    height: 50px;
+  }
+}
+/*desktop*/
+@media screen and (min-width: 500px) {
+  /* nav list styles*/
+  .nui-nav ul li {
+    cursor: pointer;
+    color: #009E41;
+    background-color: #000000;
+    height: 100px;
+    width: 150px;
+    list-style: none;
+    display: inline;
+    font-size: 2.5em;
+    font-family: 'Orbitron', sans-serif;
+    padding: 10px;
+    overflow: hidden;
+    text-align: center;
+  }
+  .nui-nav ul li a {
+    color: #009E41;
+    background-color: #000000;
+    height: 100px;
+    width: 100%;
+  }
+  /*main nav styles*/
+  .nui-nav {
+    height: 110px;
+    width: 100%;
+    overflow: hidden;
+    margin: 0;
+  }
+}
+.nui-nav ul li a:hover {
+  color: #FFFFFF;
+}
+.nui-link {
+  color: #009E41;
+  background-color: #000000;
+  height: 100px;
+}
+/* end media queries */
+.nui-nav ul li:first-child a {
+  background-color: #FFFFFF;
+  height: 100px;
+}
+/*For first children, image links*/
+.nui-image-link {
+  background-color: #FFFFFF;
+  height: 100px;
+}
+.nui-nav ul li:first-child {
+  background-color: #FFFFFF;
+  height: 100px;
+}
 .logo {
-  height: 150px;
+  height: 75px;
+  width: auto;
 }
 .page-section {
   float: left;
   display: block;
   margin: 5px 5px 5px 5px;
   clear: both;
+  width: 100%;
 }
-.nui-nav ul li:first-child {
-  background-color: #FFFFFF;
-}
-.nui-nav ul li {
-  cursor: pointer;
-  background-color: #000000;
+/*nui styles*/
+/* global styles */
+.nui-invert {
   color: #009E41;
-  height: 100px;
+  background-color: #000000;
 }
-.nui-nav {
-  height: 100px;
+/* nui border styles*/
+.nui-dynamic-border {
+  border: 5px solid;
+  border-right-width: 0px;
+  border-left-width: 0px;
+  -webkit-border-image: -webkit-gradient(linear, 0 0, 0 100%, from(black), to(#009e41)) 10 10 10 10;
+  -webkit-border-image: -webkit-linear-gradient(to left, black, #009e41) 10 10 10 10;
+  -moz-border-image: -moz-linear-gradient(to left, black, #009e41) 10 10 10 10;
+  -o-border-image: -o-linear-gradient(to left, black, #009e41) 10 10 10 10;
+  border-image: linear-gradient(to left, black, #009e41) 10 10 10 10;
 }
+/*highlight button effects*/
+.nui-off-highlight-button {
+  background-color: #009E41;
+  color: #FFFFFF;
+  border: 2px solid #000000;
+}
+.nui-highlight-button {
+  color: #009E41;
+  background-color: #000000;
+  border: 2px solid #000000;
+}
+.nui-highlight {
+  background-color: #009E41;
+  color: #FFFFFF;
+  border: 2px solid #000000;
+  margin: 5px 0 0 5px;
+  cursor: pointer;
+  padding: 5px;
+  backface-visibility: hidden;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  overflow: hidden;
+  transform: translateZ(0px);
+  transition-duration: 0.5s;
+  transition-property: color, background-color;
+  vertical-align: middle;
+}
+.nui-highlight:hover {
+  color: #009E41;
+  background-color: #000000;
+  border: 2px solid #000000;
+}
+/*end highlight button effects*/
+/* end nui styles*/
 #star-pane {
   height: 100px;
 }
@@ -26,10 +152,14 @@
   height: 400px;
 }
 .nui-bootstrap-footer {
-  position: absolute;
-  bottom: 50px;
+  color: #009E41;
+  background-color: #000000;
+  position: fixed;
+  bottom: 0;
   left: 5px;
   font-family: 'Orbitron', sans-serif;
+  width: 100%;
+  height: 50px;
 }
 .primary {
   color: #009E41;
@@ -83,16 +213,6 @@ nav a:link {
 nav a:hover {
   color: #009E41;
 }
-nav li {
-  list-style: none;
-  display: inline;
-  font-size: 2.5em;
-  font-family: 'Orbitron', sans-serif;
-  margin-left: 5%;
-}
-nav li:first-child {
-  margin-left: none;
-}
 .h1 {
   font-family: 'Homenaje', sans-serif;
 }
@@ -120,4 +240,133 @@ body h3 {
   font-size: 2.0em;
   color: #009E41;
   font-family: 'Orbitron', sans-serif;
+}
+/*angular grid class dimensions*/
+.myGrid {
+  width: 500px;
+  height: 250px;
+}
+/* Reset Styles */
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+menu,
+nav,
+section,
+dir {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
 }

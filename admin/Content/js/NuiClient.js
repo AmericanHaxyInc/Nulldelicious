@@ -2,10 +2,17 @@
  * Created by David on 11/15/2015.
  */
 "use strict";
-var nui = (function($, Q, hx$, base64)
+var nui = (function($, Q, hx$, Base64)
 {
 var root = {};
 
+    root.NavTypes =
+    {
+        Main : 0,
+        User: 1,
+        Editor : 2,
+        Site : 3
+    };
     root.BaseUri = 'http://nulldelicious.com';
     //refactor into constants and routes library
     root.AuthTokenHeader = 'X-ND-TOKEN';
@@ -131,14 +138,11 @@ var root = {};
     });
 
 
-
-
-
 root.interfaces = {
 
 };
 return root;
-})($, Q, hx$, base64);
+})($, Q, hx$, Base64);
 
 window['nui'] = nui;
 

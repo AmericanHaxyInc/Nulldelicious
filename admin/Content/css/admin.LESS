@@ -3,16 +3,124 @@
 @oblack : #000000;
 @primaryinvert : #009E41;
 
-
 @headerfont:'Orbitron', sans-serif;
 @bodyfont: 'Jura', sans-serif;
 @gridblock: 50px;
 @block : 5px;
+@mobilewidth : 500px;
+
+
+/*element styles */
+
+
+
+nav li:first-child
+
+{
+
+  margin-left:0px;
+
+}
+
+/* end element styles*/
+
+/*media queries */
+/*mobile */
+@media screen and (max-width: @mobilewidth) {
+
+  .nui-nav ul
+  {
+    width: 100%;
+  }
+
+  .nui-nav ul li
+  {
+    .nui-invert;
+    list-style: none;
+    width: 100%;
+    height: 100%;
+    display: block;
+    font-size: 2.5em;
+    font-family: @headerfont;
+    overflow:hidden;
+    text-align:center;
+    margin: 0 0 @block 0;
+    padding: 0 0 0 0;
+  }
+  .nui-nav ul li a
+  {
+    .nui-invert;
+    width: 100%;
+    display:block;
+    height:@gridblock;
+  }
+}
+
+
+/*desktop*/
+
+@media screen and (min-width: @mobilewidth) {
+  /* nav list styles*/
+
+  .nui-nav ul li
+  {
+    cursor:pointer;
+    .nui-link;
+    width: @gridblock * 3;
+    list-style:none;
+    display:inline;
+    font-size: 2.5em;
+    font-family: @headerfont;
+    padding: @block * 2;
+    overflow:hidden;
+    text-align:center;
+  }
+
+  .nui-nav ul li a {
+    .nui-link;
+    width: 100%;
+  }
+
+  /*main nav styles*/
+  .nui-nav
+  {
+    height: @block * 22;
+    width:100%;
+    overflow:hidden;
+    margin:0;
+
+  }
+}
+.nui-nav ul li a:hover {
+  color : @owhite;
+}
+.nui-link {
+  .nui-invert;
+  height: @gridblock * 2;
+}
+
+/* end media queries */
+
+.nui-nav ul li:first-child a
+{
+  .nui-image-link
+}
+
+/*For first children, image links*/
+.nui-image-link {
+  background-color: @owhite;
+  height: @gridblock * 2;
+}
+.nui-nav ul li:first-child
+{
+  .nui-image-link
+}
 
 .logo
 
 {
-height:150px;
+  height:75px;
+  width:auto;
 }
 
 .page-section
@@ -21,25 +129,86 @@ height:150px;
   display:block;
   margin: @block @block @block @block;
   clear:both;
+  width: 100%;
 }
 
-.nui-nav ul li:first-child
+
+/*nui styles*/
+
+/* global styles */
+
+.nui-invert
 {
-  background-color: @owhite;
+  color:@primaryinvert;
+  background-color:@oblack;
 }
 
-.nui-nav ul li
+/* nui border styles*/
+
+.nui-dynamic-border
 {
-  cursor:pointer;
-  background-color: @oblack;
-  color: @primaryinvert;
-  height: @gridblock * 2;
+  border: @block solid;
+  border-right-width: 0px;
+  border-left-width: 0px;
+  -webkit-border-image:
+    -webkit-gradient(linear, 0 0, 0 100%, from(black), to(rgba(0, 158, 65, 1))) 10 10 10 10;
+    -webkit-border-image:
+    -webkit-linear-gradient(to left, black, rgba(0, 158, 65, 1)) 10 10 10 10;
+    -moz-border-image:
+    -moz-linear-gradient(to left, black, rgba(0, 158, 65, 1)) 10 10 10 10;
+    -o-border-image:
+    -o-linear-gradient(to left, black, rgba(0, 158, 65, 1)) 10 10 10 10;
+    border-image:
+    linear-gradient(to left, black, rgba(0, 158, 65, 1)) 10 10 10 10;
+
 }
 
-.nui-nav
-{
-  height: @gridblock * 2;
+/*highlight button effects*/
+
+.nui-off-highlight-button
+  /*off style of highlight button*/ {
+  background-color: @primaryinvert;
+  color: @owhite;
+  border: 2px solid @oblack;
 }
+
+  .nui-highlight-button
+  {
+    .nui-invert;
+    border: 2px solid @oblack;
+  }
+
+
+.nui-highlight
+{
+  .nui-off-highlight-button;
+
+  margin: @block 0 0 @block;
+  cursor: pointer;
+  padding: @block;
+
+  backface-visibility: hidden;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  overflow: hidden;
+  transform: translateZ(0px);
+  transition-duration: 0.5s;
+  transition-property: color, background-color;
+  vertical-align: middle;
+}
+
+.nui-highlight:hover
+{
+  .nui-highlight-button;
+}
+
+/*end highlight button effects*/
+
+
+
+/* end nui styles*/
+
+
+
 #star-pane
 {
   height: @gridblock * 2;
@@ -54,10 +223,13 @@ height:150px;
 
 .nui-bootstrap-footer
 {
-  position: absolute;
-  bottom: @gridblock;
+  .nui-invert;
+  position: fixed;
+  bottom: 0;
   left: @block;
   font-family:@headerfont;
+  width: 100%;
+  height: @gridblock;
 
 }
 
@@ -206,35 +378,6 @@ color:@primary;
 }
 
 
-
-nav li
-
-{
-
-list-style:none;
-
-display:inline;
-
-font-size: 2.5em;
-
-font-family: @headerfont;
-
-margin-left:5%;
-
-}
-
-
-
-
-
-nav li:first-child
-
-{
-
-margin-left:none;
-
-}
-
 .h1
 
 {
@@ -288,11 +431,8 @@ body h1
 body h2
 
 {
-
   font-size: 2.5em;
-
   color: @primary;
-
   font-family: @headerfont;
 
 }
@@ -311,6 +451,58 @@ body h3
 
 }
 
+/*angular grid class dimensions*/
+.myGrid {
+    width: 500px;
+    height: 250px;
+  }
+
+
+/* Reset Styles */
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, menu, nav, section, dir {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol, ul {
+  list-style: none;
+}
+blockquote, q {
+  quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
 
 
 
@@ -321,15 +513,11 @@ body h3
 
 {
 
-
-
 }       
 
 ::-webkit-scrollbar-button       
 
 {
-
-
 
 }
 
