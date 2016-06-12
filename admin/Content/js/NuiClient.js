@@ -13,7 +13,14 @@ var root = {};
         Editor : 2,
         Site : 3
     };
-    root.BaseUri = 'http://nulldelicious.com';
+
+    root.EnvironmentUris =
+    {
+        local : "http://localhost:7777",
+        production : "http://nulldelicious.com"
+    };
+
+    root.BaseUri = root.EnvironmentUris.local;
     //refactor into constants and routes library
     root.AuthTokenHeader = 'X-ND-TOKEN';
     root.ApiKeyHeader = 'X-ND-APIKEY';
@@ -137,8 +144,98 @@ var root = {};
         return deferred.promise;
     });
 
+    //cors preflight request
+    root.InitCors = (function()
+    {
+        var deferred = Q.defer();
+
+        $.ajax({
+            type: 'OPTIONS',
+            url: root.BaseUri + '/Init',
+            data: {}
+        }).success(function(data, textStatus, response)
+        {
+            deferred.resolve(response);
+        }).error(function(response)
+        {
+            deferred.reject('Cors preflight failed');
+        })
+    });
+
+    root.Login = (function(encoded)
+    {
+        var deferred = Q.defer();
+        $.ajax({
+            type: 'GET',
+            url: root.BaseUri + '/User/Login',
+            data: {},
+            beforeSend: function (xhr) { xhr.setRequestHeader('Authorization', 'Basic {0}'.replace('{0}', encoded)); }
+        }).success(function (data, textStatus, response) {
+            var authResponse = response.getResponseHeader(root.AuthTokenHeader);
+            var currentUser = data;
+            deferred.resolve([authResponse, currentUser]);
+        }).error(function (response) {
+            deferred.reject('Login Failed');
+        });
+        return deferred.promise;
+    });
+
+    /*UI configurations*/
+
+    root.Ui = {
+        DeleteTemplate : '<button class="nui-delete-button"></button>'
+    };
+
+    /*end UI configurations*/
+
+    root.GetSites = (function(token, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'GET',
+                url: root.BaseUri + '/Site/All',
+                data: {}
+            },
+            store);
+    });
+
+    root.AddSite = (function(token, site, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'POST',
+                url: root.BaseUri + '/Site',
+                data: JSON.stringify(site)
+            },
+            store);
+    });
+
+    root.GetPosts = (function(token, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'GET',
+                url: root.BaseUri + '/Post/All',
+                data: {}
+            },
+            store);
+    });
+
+    root.AddPost = (function(token, post, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'POST',
+                url: root.BaseUri + '/Site',
+                data: Json.stringify(post)
+            },
+            store
+        );
+    });
 
 root.interfaces = {
+    'Site' : {get : root.GetSites, set : root.AddSite, cache: false},
+    'Post' : {get : root.GetPosts, set : root.AddPost, cache: false}
 
 };
 return root;

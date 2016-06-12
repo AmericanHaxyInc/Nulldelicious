@@ -9,6 +9,9 @@
 @block : 5px;
 @mobilewidth : 500px;
 
+@bodysize : 2.5em;
+@finesize : .5em;
+
 
 /*element styles */
 
@@ -40,7 +43,7 @@ nav li:first-child
     width: 100%;
     height: 100%;
     display: block;
-    font-size: 2.5em;
+    font-size: 2.0em;
     font-family: @headerfont;
     overflow:hidden;
     text-align:center;
@@ -53,6 +56,27 @@ nav li:first-child
     width: 100%;
     display:block;
     height:@gridblock;
+  }
+  ul.nui-nav-right {
+    list-style: none;
+    display: block;
+    font-size:1em;
+  }
+  ul.nui-nav-right li {
+    display: block;
+    float: left;
+    color: #000000;
+    background-color: white;
+    cursor: default;
+  }
+  ul.nui-nav-right input {
+    width : @block * 8;
+    padding-left: @block * 2;
+    .nui-rounded;
+  }
+  ul.nui-nav-right li label.fineprint
+  {
+    font-size: .25em;
   }
 }
 
@@ -69,11 +93,21 @@ nav li:first-child
     width: @gridblock * 3;
     list-style:none;
     display:inline;
-    font-size: 2.5em;
+    font-size: 2.0em;
     font-family: @headerfont;
     padding: @block * 2;
     overflow:hidden;
     text-align:center;
+  }
+
+  .nui-nav ul.nav-left
+  {
+    float:left;
+  }
+
+  .nui-nav ul.nav-right
+  {
+    float:right;
   }
 
   .nui-nav ul li a {
@@ -90,6 +124,31 @@ nav li:first-child
     margin:0;
 
   }
+  ul.nui-nav-right
+  {
+    float:right;list-style:none; display:inline;
+    font-size:1em;
+  }
+
+  ul.nui-nav-right li
+  {
+    display: inline;
+    color:@oblack;
+    background-color:white;
+    cursor: default;
+  }
+
+  ul.nui-nav-right input
+  {
+    width : @block * 8;
+    padding-left: @block * 2;
+    .nui-rounded
+  }
+
+  ul.nui-nav-right li label.fineprint
+  {
+    font-size: .25em;
+  }
 }
 .nui-nav ul li a:hover {
   color : @owhite;
@@ -98,6 +157,8 @@ nav li:first-child
   .nui-invert;
   height: @gridblock * 2;
 }
+
+
 
 /* end media queries */
 
@@ -136,6 +197,88 @@ nav li:first-child
 /*nui styles*/
 
 /* global styles */
+
+
+/* form styles */
+
+.nui-container table, .nui-container label, .nui-container input, .nui-container h1, .nui-container h2, .nui-container h3, .nui-container h4, .nui-container h5, .nui-container h6
+{
+  .nui-form-spacing;
+}
+
+.nui-form-spacing
+{
+  margin: 0 0 0 @block * 4;
+}
+
+.nui-fineprint
+{
+  font-size: @finesize;
+  color: @oblack;
+}
+
+.nui-form label
+{
+  min-width: 100px;
+  color: @primaryinvert;
+  font-size: @bodysize;
+  font-family: @bodyfont;
+  .nui-form-spacing;
+
+}
+
+.nui-rounded
+{
+  color: @primaryinvert;
+  border-color: @oblack;
+  border-radius: 2em;
+}
+
+.nui-form input
+{
+  .nui-form-spacing;
+  padding-left: @block * 4;
+  border-radius: 2em;
+  min-width: 300px;
+  color:@primaryinvert;
+  border-color: @oblack;
+  font-size: @bodysize;
+  font-family: @bodyfont;
+}
+
+.nui-form input:focus {
+outline-width:0;
+}
+
+
+.nui-form-group
+{
+  margin:10px 0 10px 0;
+}
+
+.nui-add-button
+{
+  width: @block * 8;
+  height: @block * 8;
+  background-size: 100%;
+  border: 0;
+  background: url("../img/Add.png") no-repeat;
+  background-size:contain;
+  cursor: pointer;
+
+}
+
+.nui-delete-button
+{
+  width: @block * 6;
+  height: @block * 6;
+  background-size: 100%;
+  border: 0;
+  background: url("../img/Delete.png") no-repeat;
+  background-size:contain;
+  cursor: pointer;
+}
+
 
 .nui-invert
 {

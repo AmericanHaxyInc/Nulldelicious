@@ -1,0 +1,161 @@
+//route, storage, and grid dependencies
+var NullDelicious = angular.module("Nulldelicious", ["ngRoute", "ngStorage", "ui.grid"]);
+
+var Main = NullDelicious.controller("Main", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location) {
+    //scope nui client scope through controller scope
+    $scope.nui = nui;
+    //define location in scope
+    $scope.$location = $location;
+    $scope.$storage = $localStorage;
+    $scope.FooterMessage = function () {
+        return $scope.$location.path() == '' ? ['Welcome to a deliciously simple CMS',
+
+            'with a tiny footprint, fantastic performance',
+            'and all the features you expect',
+            'running on node. Nulldelicious!'] : [];
+    };
+    $scope.Identity = '';
+    $scope.Login = (function (username, password) {
+        //get encoded
+        var encoded = nui.EncodeLogin(username, password);
+        //clear username and password
+        $scope.Username = '';
+        $scope.Password = '';
+        //now make login request.
+        var login = nui.Login(encoded).then(function (result) {
+            //keep track of current identity
+            $scope.Identity = result[1].user;
+            //create data context after login
+            $scope.DataManager = new nui.DataManager($scope.$storage, result[0]);
+        })
+            .fail(function (error) {
+                //display auth error to user.
+                $scope.AuthError = true;
+            });
+    });
+});
+
+var Site = NullDelicious.controller("Site", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
+{
+    //scope nui client scope through controller scope
+    $scope.nui = nui;
+    //todo: remove fixture data
+    $scope.GlobalSites = [
+        {
+            "Title" : "A small death",
+            "Description" : "You know what this site is about"
+        },
+        {
+            "Title" : "David's Blog",
+            "Description" : "David's Blog"
+        }
+
+    ];
+
+    var deleteTemplate = nui.Ui.DeleteTemplate;
+    $scope.GlobalSitesColumns = [{field : 'Title'},
+        {field : 'Description'},
+        {field : 'Delete', cellTemplate: deleteTemplate}
+    ];
+
+    $scope.GlobalSitesData = {
+        data : $scope.GlobalSites,
+        columnDefs : $scope.GlobalSitesColumns
+    };
+
+    $scope.RemoveSiteDataByTitle = (function(title)
+    {
+        //find the element to remove.
+        var index = $scope.GlobalSitesData.data.indexOf(title);
+        //show modal confirming deletion
+
+        //make call to server to delete
+
+        //remove from collection
+        $scope.GlobalSitesData.data.splice(index, 1);
+    });
+
+    $scope.AddSite = (function(title, description)
+    {
+        //add to cache and server
+
+        //add to global sites data,
+        $scope.GlobalSitesData.data.push({Title : title , Description : description});
+    });
+});
+var Editor = NullDelicious.controller("Editor", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
+{
+    //scope nui client scope through controller scope
+    $scope.nui = nui;
+    //todo: remove fixture data
+    $scope.Posts = [
+        {
+            "id" : "1",
+            "title" : "Star Wars Battlefront",
+            "body" : "lorem ipsum dolores si amet",
+            "date" : new Date(),
+            "comments" : ["this is a set", "of comments"],
+            "tags" : ["star wars", "games"],
+            "author_name" : "David Dworetzky",
+            "site_title" : "David's Blog",
+            "site_description" : "David's Blog"
+        },
+        {
+            "id" : "1",
+            "title" : "Star Wars Battlefront continued",
+            "body" : "lorem ipsum dolores si amet amet dolores sit ipsum",
+            "date" : new Date(),
+            "comments" : ["this is another set", "of comments"],
+            "tags" : ["star wars", "games"],
+            "author_name" : "David Dworetzky",
+            "site_title" : "David's Blog",
+            "site_description" : "David's Blog"
+        }
+    ]
+});
+var Images = NullDelicious.controller("Images", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
+{
+    $scope.nui = nui;
+    //todo: remove fixture data
+    $scope.Images = [];
+
+});
+var Styles = NullDelicious.controller("Styles", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
+{
+    $scope.nui = nui;
+    //todo: remove fixture data
+    $scope.Styles = [];
+});
+var Users = NullDelicious.controller("Users", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
+{
+    //scope nui client scope through controller scope
+    $scope.nui = nui;
+    //todo: remove fixture data
+    $scope.GlobalUsers = [
+        {
+            "id" : "1",
+            "name" : "ddworetzky",
+            "first" : "David",
+            "last" : "Dworetzky",
+            "email" : "fakeemail@gmail.com",
+            "gender" : "male",
+            "date" : new Date(),
+            "password" : "",
+            "site_title" : "David's Blog",
+            "site_description" : "David's Blog",
+            "role_name" : "admin",
+            "role_access" : []
+        }
+
+    ]
+});
+NullDelicious.config(['$routeProvider',
+    function($routeProvider, $locationProvider){
+        $routeProvider.when('/Editor', {
+            templateUrl: 'Editor.html', controller : "Editor"
+        })
+            .when('/Site', {templateUrl: 'Site.html', controller: "Site"})
+            .when('/Users',{templateUrl: 'Users.html', controller : "Users"})
+            .when('/Styles',{templateUrl: 'Styles.html', controller: "Styles"})
+            .when('/Images',{templateUrl: 'Images.html', controller: "Images"})
+    }]);

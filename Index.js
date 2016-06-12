@@ -3,65 +3,132 @@ var express = require('express');
 var ndcore = require('./lib/Ndcore.js');
 var http = require('http');
 var https = require('https');
+var ndconfig = require('./lib/config/NdConfig.js');
+
+
 var app = express();
 
+
+//Application Middleware
 //request logging
-app.use(function(req, res, next)
-{
-    var date = new Date();
-    console.log('Request time : %d', Date.now());
-    console.log('Request type : %s', req.path);
-    next();
+
+//execute this callback if
+ndconfig.MiddleWare('logging', function() {
+    app.use(function (req, res, next) {
+        var date = new Date();
+        console.log('Request time : %d', Date.now());
+        console.log('Request type : %s', req.path);
+        next();
+    });
 });
-//CORS support
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
+ndconfig.MiddleWare('cors', function() {
+    //CORS support
+    app.use(function (req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+
+        if ('OPTIONS' == req.method) {
+            res.sendStatus(204);
+        }
+        else {
+            next();
+        }
+    });
 });
+
+//error handling middleware
+app.use(function(err, req, res, next) {
+    console.error(err.stack);
+    res.status(500).send('An unexpected error occurred.');
+});
+
 
 var handleError = function(error, res){
     console.log(error);
-    if(error.indexOf('authorization') > -1)
+    var errorMessage = typeof(error) === 'string' ? error : error.message;
+    //maps internal error reason to failure codes
+    if(errorMessage.toLowerCase().indexOf('authorization') > -1)
     {
-        res.status(403).send(error);
+        res.status(403).send(errorMessage);
     }
     else
     {
-        res.status(500).send(error);
+        res.status(500).send(errorMessage);
     }
 };
+//specific endpoints
+//specific endpoint for login requests
+app.get('/user/login', function(req, res)
+{
+    console.log('logging in user');
+    ndcore.authentication.authenticate(req.headers, 'user', 'get', res).then(function(principle) {
+        res.status(200).send({user : principle.name});
+    }).catch(function(error)
+    {
+        handleError(error, res);
+    });
+});
+
+//api key creation mount
+app.post('/key', function(req, res)
+{
+    console.log('api key creation');
+    ndcore.authentication.createKey(req.headers, req.params.user, res).then(function(key) {
+        res.status(200).send({key: key});
+    });
+});
+
 
 //mount all get requests for models
 for(var resource in ndcore.Json)
 {
     if(ndcore.Json.hasOwnProperty(resource))
     {
+        //mount get by id
         var getResource = (function(appResource, req, res)
         {
-            ndcore.authentication.authenticate(req.headers, appResource, 'get', res.headers)
-                .then(function(principle)
-                {
-                    ndcore.interfaces.GetId(appResource, req.params.identification, [], 0, principle)
-                        .then(function (element)
-                        {
-                            res.status(200).send(element);
-                        }).catch(function (error) {
-                            handleError(error, res);
-                        });
-                }).catch(function(error)
-                {
-                    handleError(error, res);
-                })
+            //only follow this route if it is not a login route, that's why we place the login route first
+                console.log('getting resource {}'.replace('{}', appResource));
+                ndcore.authentication.authenticate(req.headers, appResource, 'get', res)
+                    .then(function (principle) {
+                        ndcore.interfaces.GetId(appResource, req.params.identification, [], 0, principle)
+                            .then(function (element) {
+                                res.status(200).send(element);
+                            }).catch(function (error) {
+                                handleError(error, res);
+                            });
+                    }).catch(function (error) {
+                        handleError(error, res);
+                    });
         });
         var currentGet = getResource.bind(this, resource);
         app.get('/' + resource + '/:identification', currentGet);
+
+        //mount get all
+        var getAll = (function(appResource, req, res)
+        {
+            console.log('getting all resources {}'.replace('{}', appResource));
+            ndcore.authentication.authenticate(req.headers, appResource, 'get', res)
+                .then(function(principle)
+                {
+                    ndcore.interfaces.GetAll(appResource, principle)
+                        .then(function (elements)
+                        {
+                            res.status(200).send(elements);
+                        }).catch(function(error) {
+                            handleError(error, res);
+                        })
+                });
+        });
+        app.get('/' + resource + '/all', getAll);
+
 
         //mount query requests
 
         var queryResource = (function(appResource, req, res)
         {
-            ndcore.authentication.authenticate(req.headers, appResource, 'get', res.headers).then(function(principle) {
+            console.log('running api subquery on resource {}'.replace('{}', appResource));
+            ndcore.authentication.authenticate(req.headers, appResource, 'get', res).then(function(principle) {
                 ndcore.interfaces.GetQuery(appResource, req.params.query, req.params.attribute, principle).then(function (elements) {
                     res.status(200).send(elements);
                 }).catch(function (error) {
@@ -78,7 +145,8 @@ for(var resource in ndcore.Json)
         //mount resource saving
         var saveResource = (function(appResource, req, res)
         {
-            ndcore.authentication.authenticate(req.headers, appResource, 'set', res.headers).then(function(principle) {
+            console.log('saving resource {}'.replace('{}', appResource));
+            ndcore.authentication.authenticate(req.headers, appResource, 'set', res).then(function(principle) {
                 ndcore.interfaces.SetId(appResource, req.body, req.body.id, principle).then(function (element) {
                     res.status(200).send(element);
                 }).catch(function (error) {
@@ -94,7 +162,8 @@ for(var resource in ndcore.Json)
 
         var deleteResource = (function(appResource, req, res)
         {
-            ndcore.authentication.authenticate(req.headers, appResource, 'delete', res.headers).then(function(principle) {
+            console.log('deleting resource {}'.replace('{}', appResource));
+            ndcore.authentication.authenticate(req.headers, appResource, 'delete', res).then(function(principle) {
                 ndcore.interfaces.DeleteId(appResource, req.params.identification, principle).then(function (result) {
                     res.status(200).send({response: "success"});
                 }).catch(function (error) {
@@ -111,24 +180,8 @@ for(var resource in ndcore.Json)
         app.delete('/' + resource + '/:identification', currentDelete);
     }
 }
-//api key creation mount
-app.post('/key', function(req, res)
-{
-    ndcore.authentication.createKey(req.headers, req.params.user, res.headers).then(function(key) {
-        res.status(200).send({key: key});
-    });
-});
-//specific endpoint for login requests
-app.get('/user/login', function(req, res)
-{
-    ndcore.authentication.authenticate(req.headers, 'user', 'get', res.headers).then(function(principle) {
-        res.status(200).send({response: "success"});
-    }).catch(function(error)
-    {
-        handleError(error, res);
-    });
-});
 
 
-app.listen(8080);
+
+app.listen(7777);
 

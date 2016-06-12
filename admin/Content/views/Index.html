@@ -18,160 +18,53 @@
     <script type="text/javascript" src="../js/ui-grid.min.js"></script>
     <script type="text/javascript" src="../js/ng-storage.min.js"></script>
 
-    <script type="text/javascript">
-        //route, storage, and grid dependencies
-    var NullDelicious = angular.module("Nulldelicious", ["ngRoute", "ngStorage", "ui.grid"]);
-
-
-    //TODO : factor out controllers into their own javascript file
-    var Main = NullDelicious.controller("Main", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
-    {
-        //scope nui client scope through controller scope
-        $scope.nui = nui;
-        //define location in scope
-        $scope.$location = $location;
-
-        $scope.FooterMessage = function() {
-            return $scope.$location.path() == '' ? ['Welcome to a deliciously simple CMS',
-
-                'with a tiny footprint, fantastic performance',
-                'and all the features you expect',
-                'running on node. Nulldelicious!'] : [];
-        }
-
-
-
-
-    });
-
-    var Site = NullDelicious.controller("Site", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
-    {
-        //scope nui client scope through controller scope
-        $scope.nui = nui;
-        //todo: remove fixture data
-        $scope.GlobalSites = [
-            {
-                "Title" : "A small death",
-                "Description" : "You know what this site is about"
-            },
-            {
-                "Title" : "David's Blog",
-                "Description" : "David's Blog"
-            }
-
-        ]
-    });
-
-    var Editor = NullDelicious.controller("Editor", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
-    {
-        //scope nui client scope through controller scope
-        $scope.nui = nui;
-        //todo: remove fixture data
-        $scope.Posts = [
-            {
-                "id" : "1",
-                "title" : "Star Wars Battlefront",
-                "body" : "lorem ipsum dolores si amet",
-                "date" : new Date(),
-                "comments" : ["this is a set", "of comments"],
-                "tags" : ["star wars", "games"],
-                "author_name" : "David Dworetzky",
-                "site_title" : "David's Blog",
-                "site_description" : "David's Blog"
-            },
-            {
-                "id" : "1",
-                "title" : "Star Wars Battlefront continued",
-                "body" : "lorem ipsum dolores si amet amet dolores sit ipsum",
-                "date" : new Date(),
-                "comments" : ["this is another set", "of comments"],
-                "tags" : ["star wars", "games"],
-                "author_name" : "David Dworetzky",
-                "site_title" : "David's Blog",
-                "site_description" : "David's Blog"
-            }
-        ]
-    });
-
-        var Images = NullDelicious.controller("Images", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
-        {
-            $scope.nui = nui;
-            //todo: remove fixture data
-            $scope.Images = [];
-
-        });
-
-        var Styles = NullDelicious.controller("Styles", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
-        {
-            $scope.nui = nui;
-            //todo: remove fixture data
-            $scope.Styles = [];
-        });
-
-    var Users = NullDelicious.controller("Users", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
-    {
-        //scope nui client scope through controller scope
-        $scope.nui = nui;
-        //todo: remove fixture data
-        $scope.GlobalUsers = [
-            {
-                "id" : "1",
-                "name" : "ddworetzky",
-                "first" : "David",
-                "last" : "Dworetzky",
-                "email" : "fakeemail@gmail.com",
-                "gender" : "male",
-                "date" : new Date(),
-                "password" : "",
-                "site_title" : "David's Blog",
-                "site_description" : "David's Blog",
-                "role_name" : "admin",
-                "role_access" : []
-            }
-
-        ]
-    });
-
-        NullDelicious.config(['$routeProvider',
-    function($routeProvider, $locationProvider){
-        $routeProvider.when('/Editor', {
-            templateUrl: 'Editor.html', controller : "Editor"
-        })
-                .when('/Site', {templateUrl: 'Site.html', controller: "Site"})
-                .when('/Users',{templateUrl: 'Users.html', controller : "Users"})
-                .when('/Styles',{templateUrl: 'Styles.html', controller: "Styles"})
-                .when('/Images',{templateUrl: 'Images.html', controller: "Images"})
-    }]);
-
-    </script>
+    <script type="text/javascript" src="../js/app.js"></script>
 </head>
 <body ng-app="Nulldelicious" ng-controller="Main">
 <div id="content">
     <nav class="nui-nav page-section nui-dynamic-border">
-        <ul>
-            <li><!--
-                --><a href="#"><!--
-                    --><img class ="logo" src="../img/Nulldelicious_03.gif"/><!--
-                --></a><!--
-            --></li><!--
-            --><li><!--
-                --><a href="#/Site" class="nui-highlight">Site</a><!--
-            --></li><!--
-            --><li><!--
-                --><a href="#/Editor" class="nui-highlight">Editor</a><!--
-            --></li><!--
-            --><li><!--
-                --><a href="#/Users" class="nui-highlight">Users</a><!--
-            --></li><!--
-                --><li><!--
-                    --><a href="#/Styles" class="nui-highlight">Styles</a><!--
-                --></li><!--
-            --><li><!--
-                --><a href="#/Images" class="nui-highlight">Images</a><!--
-            --></li>
-        </ul><!--
+        <ul class="nav-left">
+            <li>
+                <a href="#">
+                    <img class ="logo" src="../img/Nulldelicious_03.gif"/>
+                </a>
+            </li>
+            <li>
+                <a href="#/Site" class="nui-highlight">Site</a>
+            </li>
+            <li>
+                <a href="#/Editor" class="nui-highlight">Editor</a>
+            </li>
+            <li>
+                <a href="#/Users" class="nui-highlight">Users</a>
+            </li>
+                <li>
+                    <a href="#/Styles" class="nui-highlight">Styles</a>
+                </li>
+            <li>
+                <a href="#/Images" class="nui-highlight">Images</a>
+            </li>
+        </ul>
 
-    --></nav>
+        <!-- right login nav -->
+        <ul class="nui-nav-right">
+            <li>
+                   <label class ="nui-fineprint" for="Username">User</label>
+                <input  id="Username" type="text" ng-model="username">
+            </li>
+            <li>
+                <label class="nui-fineprint" for="Password">Password</label>
+                <input  id="Password" type="password" ng-model="password">
+            </li>
+            <!-- identity section -->
+            <li ng-if="Identity !== ''">
+                <label class="nui-highlight-button" ng-value="Identity"></label>
+            </li>
+            <li>
+                <button class="nui-highlight-button" ng-click="Login(username, password)">Login</button>
+            </li>
+        </ul>
+    </nav>
 
     <!--this is where our content goes for each section of the admin -->
     <div id="ContentView" class="page-section" ng-view>
@@ -204,9 +97,6 @@
     <footer class="floating-footer" >
         <img id="return-scroller"/>
     </footer>
-
-
-
 </div>
 <div id="footer" class="nui-bootstrap-footer">
     copyright 2016 American Haxy inc.

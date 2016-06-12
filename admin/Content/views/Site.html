@@ -1,5 +1,15 @@
-<h2> Sites </h2>
-<div ui-grid="{data: GlobalSites}">
 
+<div id="SiteViewContainer" class="nui-container">
+    <h2> Sites </h2>
 
+    <!-- add template -->
+    <div id="AddSiteRow" class="nui-form">
+        <div class="nui-form-group">
+            <label for="SiteTitle">Title</label><input id="SiteTitle" type="text" ng-model="Title"/>
+            <label for="SiteDescription">Description</label><input id="SiteDescription" type="text" ng-model="Description"/>
+            <button id ="AddSiteButton" class="nui-add-button" ng-click="AddSite(Title, Description)"></button>
+        </div>
+    </div>
+    <div ui-grid="GlobalSitesData" class="nui-form-spacing">
+    </div>
 </div>
