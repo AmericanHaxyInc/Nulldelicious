@@ -21,11 +21,21 @@ ndconfig.MiddleWare('logging', function() {
         next();
     });
 });
+
+ndconfig.MiddleWare('xpoweredby', function() {
+    //remove x-powered-by express
+    app.use(function (req, res, next) {
+        res.removeHeader("X-Powered-By");
+        next();
+    });
+});
+
 ndconfig.MiddleWare('cors', function() {
     //CORS support
     app.use(function (req, res, next) {
-        res.header("Access-Control-Allow-Origin", "*");
-        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+        res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,POST,PUT,DELETE");
 
         if ('OPTIONS' == req.method) {
             res.sendStatus(204);
@@ -35,6 +45,8 @@ ndconfig.MiddleWare('cors', function() {
         }
     });
 });
+
+//ensure that NdConfig has loaded, then mount the rest of our routes and endpoints
 
 //error handling middleware
 app.use(function(err, req, res, next) {
