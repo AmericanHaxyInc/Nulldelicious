@@ -41,18 +41,16 @@ var Site = NullDelicious.controller("Site", function ($scope, $http, $localStora
 {
     //scope nui client scope through controller scope
     $scope.nui = nui;
-    //todo: remove fixture data
-    $scope.GlobalSites = [
-        {
-            "Title" : "A small death",
-            "Description" : "You know what this site is about"
-        },
-        {
-            "Title" : "David's Blog",
-            "Description" : "David's Blog"
-        }
 
-    ];
+    $scope.GetSites = (function()
+    {
+        if($scope.DataManager) {
+            $scope.DataManager.Get('Site').then(function (data) {
+                $scope.GlobalSites = data;
+                $scope.$apply();
+            });
+        }
+    });
 
     var deleteTemplate = nui.Ui.DeleteTemplate;
     $scope.GlobalSitesColumns = [{field : 'Title'},
@@ -79,11 +77,23 @@ var Site = NullDelicious.controller("Site", function ($scope, $http, $localStora
 
     $scope.AddSite = (function(title, description)
     {
-        //add to cache and server
-
-        //add to global sites data,
-        $scope.GlobalSitesData.data.push({Title : title , Description : description});
+        //construct new site
+        var newSite = new $scope.nui.site(title, description);
+        //attempt write to server
+        $scope.DataManager.Set('Site', newSite).then(function(data)
+        {
+            //if successful, add to our global site data collection
+            $scope.GlobalSitesData.push(newSite);
+        }).fail(function(error)
+        {
+            //if write fails, set our error and show an error modal
+            $scope.ApiError = error;
+        });
     });
+
+    /*start by getting sites*/
+
+    $scope.GetSites();
 });
 var Editor = NullDelicious.controller("Editor", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
 {

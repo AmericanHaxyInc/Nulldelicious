@@ -31,7 +31,7 @@ var root = {};
         var self = this;
         //storage interface derived from angular
         self.storage = storage;
-        self.interfaces = root.Interfaces;
+        self.interfaces = root.interfaces;
         //which objects have been updated and when
         self.storage['Cache'] = {};
         //if we have not been provided a token or the token is not defined, then throw an error
@@ -188,13 +188,26 @@ var root = {};
 
     /*end UI configurations*/
 
+
+    /* todo : refactor as method for an angular service */
+
+    /* site*/
+    /*site constructor*/
+    root.Site = (function(title, description)
+    {
+        var self = this;
+        self.title = title;
+        self.description = description;
+        self.id = hx$.guid();
+    });
+
+
     root.GetSites = (function(token, store)
     {
         return root.AuthorizedRequest(token,
             {
                 type: 'GET',
-                url: root.BaseUri + '/Site/All',
-                data: {}
+                url: root.BaseUri + '/site/all',
             },
             store);
     });
@@ -204,19 +217,19 @@ var root = {};
         return root.AuthorizedRequest(token,
             {
                 type: 'POST',
-                url: root.BaseUri + '/Site',
+                url: root.BaseUri + '/site',
                 data: JSON.stringify(site)
             },
             store);
     });
 
+    /*post*/
     root.GetPosts = (function(token, store)
     {
         return root.AuthorizedRequest(token,
             {
                 type: 'GET',
-                url: root.BaseUri + '/Post/All',
-                data: {}
+                url: root.BaseUri + '/post/all',
             },
             store);
     });
@@ -226,8 +239,83 @@ var root = {};
         return root.AuthorizedRequest(token,
             {
                 type: 'POST',
-                url: root.BaseUri + '/Site',
+                url: root.BaseUri + '/site',
                 data: Json.stringify(post)
+            },
+            store
+        );
+    });
+
+    /*users*/
+
+    root.GetUsers = (function(token, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'GET',
+                url: root.BaseUri + '/user/all'
+            },
+            store
+        );
+    });
+
+    root.AddUser = (function(token, user, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'POST',
+                url: root.BaseUri + '/user',
+                data: Json.stringify(user)
+            },
+            store
+        );
+    });
+
+    /*images*/
+
+    root.GetImages = (function(token, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'GET',
+                url: root.BaseUri + '/image/all'
+            },
+            store
+        );
+    });
+
+    root.AddImage = (function(token, image, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'POST',
+                url: root.BaseUri + '/image',
+                data : json.stringify(image)
+            },
+            store
+        );
+    });
+
+    /*themes*/
+
+    root.GetThemes = (function(token, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'GET',
+                url: root.BaseUri + '/theme/all'
+            },
+            store
+        );
+    });
+
+    root.AddTheme = (function(token, theme, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'POST',
+                url: root.BaseUri + '/theme',
+                data : json.stringify(theme)
             },
             store
         );
@@ -235,8 +323,10 @@ var root = {};
 
 root.interfaces = {
     'Site' : {get : root.GetSites, set : root.AddSite, cache: false},
-    'Post' : {get : root.GetPosts, set : root.AddPost, cache: false}
-
+    'Post' : {get : root.GetPosts, set : root.AddPost, cache: false},
+    'User' : {get : root.GetUsers, set : root.AddUser, cache: false},
+    'Image' : {get : root.GetImages, set : root.AddImage, cache: false},
+    'Theme' : {get : root.GetThemes, set : root.AddTheme, cache: false}
 };
 return root;
 })($, Q, hx$, Base64);
