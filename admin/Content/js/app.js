@@ -24,13 +24,15 @@ var Main = NullDelicious.controller("Main", function ($scope, $http, $localStora
         //now make login request.
         var login = nui.Login(encoded).then(function (result) {
             //keep track of current identity
-            $scope.Identity = result[1].user;
+            $scope.Identity = result[1];
             //create data context after login
             $scope.DataManager = new nui.DataManager($scope.$storage, result[0]);
+            $scope.$apply();
         })
             .fail(function (error) {
                 //display auth error to user.
                 $scope.AuthError = true;
+                $scope.$apply();
             });
     });
 });

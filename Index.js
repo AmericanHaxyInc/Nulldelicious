@@ -26,7 +26,7 @@ var logger = ndconfig.MiddleWare('logging', function() {
 var xpoweredby = ndconfig.MiddleWare('xpoweredby', function() {
     //change site to have x-powered-by nulldelicious http header
     app.use(function (req, res, next) {
-        res.setHeader("X-Powered-By", "nulldelicious");
+        res.set("X-Powered-By", "nulldelicious");
         next();
     });
 });
@@ -34,9 +34,10 @@ var xpoweredby = ndconfig.MiddleWare('xpoweredby', function() {
 var cors = ndconfig.MiddleWare('cors', function() {
     //CORS support
     app.use(function (req, res, next) {
-        res.setHeader("Access-Control-Allow-Origin", "*");
-        res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-        res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,POST,PUT,DELETE");
+        res.set("Access-Control-Allow-Origin", "*");
+        res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-ND-TOKEN");
+        res.set("Access-Control-Allow-Methods", "GET,HEAD,POST,PUT,DELETE");
+        res.set("Access-Control-Expose-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-ND-TOKEN");
 
         if ('OPTIONS' == req.method) {
             res.sendStatus(204);
@@ -75,8 +76,11 @@ middleWare.then(function (middlewareResult) {
 //specific endpoint for login requests
     app.get('/user/login', function (req, res) {
         console.log('logging in user');
+        //set appropriate response header for this endpoint type
+        res.set("Content-Type", "application/json");
         ndcore.authentication.authenticate(req.headers, 'user', 'get', res).then(function (principle) {
-            res.status(200).send({user: principle.name});
+            console.log('user logged in');
+            res.status(200).send(JSON.stringify({user: principle.name}));
         }).catch(function (error) {
             handleError(error, res);
         });
@@ -85,8 +89,10 @@ middleWare.then(function (middlewareResult) {
 //api key creation mount
     app.post('/key', function (req, res) {
         console.log('api key creation');
+        //the appropriate content type for this response is json
+        res.set("Content-Type", "application/json");
         ndcore.authentication.createKey(req.headers, req.params.user, res).then(function (key) {
-            res.status(200).send({key: key});
+            res.status(200).send(JSON.stringify({key: key}));
         });
     });
 
@@ -100,9 +106,10 @@ middleWare.then(function (middlewareResult) {
                 console.log('getting resource {}'.replace('{}', appResource));
                 ndcore.authentication.authenticate(req.headers, appResource, 'get', res)
                     .then(function (principle) {
+                        res.set("Content-Type", "application/json");
                         ndcore.interfaces.GetId(appResource, req.params.identification, [], 0, principle)
                             .then(function (element) {
-                                res.status(200).send(element);
+                                res.status(200).send(JSON.stringify(element));
                             }).catch(function (error) {
                                 handleError(error, res);
                             });
@@ -118,9 +125,10 @@ middleWare.then(function (middlewareResult) {
                 console.log('getting all resources {}'.replace('{}', appResource));
                 ndcore.authentication.authenticate(req.headers, appResource, 'get', res)
                     .then(function (principle) {
+                        res.set("Content-Type", "application/json");
                         ndcore.interfaces.GetAll(appResource, principle)
                             .then(function (elements) {
-                                res.status(200).send(elements);
+                                res.status(200).send(JSON.stringify(elements));
                             }).catch(function (error) {
                                 handleError(error, res);
                             })
@@ -134,8 +142,9 @@ middleWare.then(function (middlewareResult) {
             var queryResource = (function (appResource, req, res) {
                 console.log('running api subquery on resource {}'.replace('{}', appResource));
                 ndcore.authentication.authenticate(req.headers, appResource, 'get', res).then(function (principle) {
+                    res.set("Content-Type", "application/json");
                     ndcore.interfaces.GetQuery(appResource, req.params.query, req.params.attribute, principle).then(function (elements) {
-                        res.status(200).send(elements);
+                        res.status(200).send(JSON.stringify(elements));
                     }).catch(function (error) {
                         handleError(error, res);
                     });
@@ -150,8 +159,9 @@ middleWare.then(function (middlewareResult) {
             var saveResource = (function (appResource, req, res) {
                 console.log('saving resource {}'.replace('{}', appResource));
                 ndcore.authentication.authenticate(req.headers, appResource, 'set', res).then(function (principle) {
+                    res.set("Content-Type", "application/json");
                     ndcore.interfaces.SetId(appResource, req.body, req.body.id, principle).then(function (element) {
-                        res.status(200).send(element);
+                        res.status(200).send(JSON.stringify(element));
                     }).catch(function (error) {
                         handleError(error, res);
                     });
@@ -165,8 +175,9 @@ middleWare.then(function (middlewareResult) {
             var deleteResource = (function (appResource, req, res) {
                 console.log('deleting resource {}'.replace('{}', appResource));
                 ndcore.authentication.authenticate(req.headers, appResource, 'delete', res).then(function (principle) {
+                    res.set("Content-Type", "application/json");
                     ndcore.interfaces.DeleteId(appResource, req.params.identification, principle).then(function (result) {
-                        res.status(200).send({response: "success"});
+                        res.status(200).send(JSON.stringify({response: "success"}));
                     }).catch(function (error) {
                         handleError(error, res);
                     });

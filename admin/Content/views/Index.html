@@ -46,19 +46,19 @@
 
         <!-- right login nav -->
         <ul class="nui-nav-right">
-            <li>
+            <li ng-show="Identity === ''">
                    <label class ="nui-fineprint" for="Username">User</label>
                 <input  id="Username" type="text" ng-model="username">
             </li>
-            <li>
+            <li ng-show="Identity === ''">
                 <label class="nui-fineprint" for="Password">Password</label>
                 <input  id="Password" type="password" ng-model="password">
             </li>
             <!-- identity section -->
-            <li ng-if="Identity !== ''">
-                <label class="nui-highlight-button" ng-value="Identity"></label>
+            <li ng-show="Identity !== ''">
+                <label class="nui-highlight-button">{{Identity}}</label>
             </li>
-            <li>
+            <li ng-show="Identity === ''">
                 <button class="nui-highlight-button" ng-click="Login(username, password)">Login</button>
             </li>
         </ul>

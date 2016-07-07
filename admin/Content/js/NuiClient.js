@@ -172,7 +172,7 @@ var root = {};
             beforeSend: function (xhr) { xhr.setRequestHeader('Authorization', 'Basic {0}'.replace('{0}', encoded)); }
         }).success(function (data, textStatus, response) {
             var authResponse = response.getResponseHeader(root.AuthTokenHeader);
-            var currentUser = data;
+            var currentUser = data.user;
             deferred.resolve([authResponse, currentUser]);
         }).error(function (response) {
             deferred.reject('Login Failed');
