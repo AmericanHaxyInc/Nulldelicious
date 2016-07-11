@@ -5,9 +5,12 @@ var http = require('http');
 var https = require('https');
 var ndconfig = require('./lib/config/NdConfig.js');
 var Q = require('q');
+var hx$ = require('./lib/HaxyClosures.js');
 
 
 var app = express();
+//assign our core's config to be the ndconfig instance loaded from index
+ndcore.config = ndconfig;
 
 
 //Application Middleware
@@ -17,8 +20,8 @@ var app = express();
 var logger = ndconfig.MiddleWare('logging', function() {
     app.use(function (req, res, next) {
         var date = new Date();
-        console.log('Request time : %d', Date.now());
-        console.log('Request type : %s', req.path);
+        hx$.log('Request time : %d', Date.now());
+        hx$.log('Request type : %s', req.path);
         next();
     });
 });
@@ -56,13 +59,13 @@ middleWare.then(function (middlewareResult) {
 
 //error handling middleware
     app.use(function (err, req, res, next) {
-        console.error(err.stack);
+        hx$.error(err.stack);
         res.status(500).send('An unexpected error occurred.');
     });
 
 
     var handleError = function (error, res) {
-        console.log(error);
+        hx$.log(error);
         var errorMessage = typeof(error) === 'string' ? error : error.message;
         //maps internal error reason to failure codes
         if (errorMessage.toLowerCase().indexOf('authorization') > -1) {
@@ -75,11 +78,11 @@ middleWare.then(function (middlewareResult) {
 //specific endpoints
 //specific endpoint for login requests
     app.get('/user/login', function (req, res) {
-        console.log('logging in user');
+        hx$.log('logging in user');
         //set appropriate response header for this endpoint type
         res.set("Content-Type", "application/json");
         ndcore.authentication.authenticate(req.headers, 'user', 'get', res).then(function (principle) {
-            console.log('user logged in');
+            hx$.log('user logged in');
             res.status(200).send(JSON.stringify({user: principle.name}));
         }).catch(function (error) {
             handleError(error, res);
@@ -88,7 +91,7 @@ middleWare.then(function (middlewareResult) {
 
 //api key creation mount
     app.post('/key', function (req, res) {
-        console.log('api key creation');
+        hx$.log('api key creation');
         //the appropriate content type for this response is json
         res.set("Content-Type", "application/json");
         ndcore.authentication.createKey(req.headers, req.params.user, res).then(function (key) {
@@ -103,7 +106,7 @@ middleWare.then(function (middlewareResult) {
             //mount get by id
             var getResource = (function (appResource, req, res) {
                 //only follow this route if it is not a login route, that's why we place the login route first
-                console.log('getting resource {}'.replace('{}', appResource));
+                hx$.log('getting resource {}'.replace('{}', appResource));
                 ndcore.authentication.authenticate(req.headers, appResource, 'get', res)
                     .then(function (principle) {
                         res.set("Content-Type", "application/json");
@@ -122,7 +125,7 @@ middleWare.then(function (middlewareResult) {
 
             //mount get all
             var getAll = (function (appResource, req, res) {
-                console.log('getting all resources {}'.replace('{}', appResource));
+                hx$.log('getting all resources {}'.replace('{}', appResource));
                 ndcore.authentication.authenticate(req.headers, appResource, 'get', res)
                     .then(function (principle) {
                         res.set("Content-Type", "application/json");
@@ -140,7 +143,7 @@ middleWare.then(function (middlewareResult) {
             //mount query requests
 
             var queryResource = (function (appResource, req, res) {
-                console.log('running api subquery on resource {}'.replace('{}', appResource));
+                hx$.log('running api subquery on resource {}'.replace('{}', appResource));
                 ndcore.authentication.authenticate(req.headers, appResource, 'get', res).then(function (principle) {
                     res.set("Content-Type", "application/json");
                     ndcore.interfaces.GetQuery(appResource, req.params.query, req.params.attribute, principle).then(function (elements) {
@@ -157,7 +160,7 @@ middleWare.then(function (middlewareResult) {
 
             //mount resource saving
             var saveResource = (function (appResource, req, res) {
-                console.log('saving resource {}'.replace('{}', appResource));
+                hx$.log('saving resource {}'.replace('{}', appResource));
                 ndcore.authentication.authenticate(req.headers, appResource, 'set', res).then(function (principle) {
                     res.set("Content-Type", "application/json");
                     ndcore.interfaces.SetId(appResource, req.body, req.body.id, principle).then(function (element) {
@@ -173,7 +176,7 @@ middleWare.then(function (middlewareResult) {
             app.post('/' + resource, currentSave);
 
             var deleteResource = (function (appResource, req, res) {
-                console.log('deleting resource {}'.replace('{}', appResource));
+                hx$.log('deleting resource {}'.replace('{}', appResource));
                 ndcore.authentication.authenticate(req.headers, appResource, 'delete', res).then(function (principle) {
                     res.set("Content-Type", "application/json");
                     ndcore.interfaces.DeleteId(appResource, req.params.identification, principle).then(function (result) {
@@ -191,8 +194,6 @@ middleWare.then(function (middlewareResult) {
             app.delete('/' + resource + '/:identification', currentDelete);
         }
     }
-
-
     app.listen(7777);
 });
 
