@@ -7,6 +7,10 @@ var ndconfig = require('./lib/config/NdConfig.js');
 var Q = require('q');
 var hx$ = require('./lib/HaxyClosures.js');
 
+var bodyParser = require('body-parser');
+var multer = require('multer'); // v1.0.5
+var upload = multer(); // for parsing multipart/form-data
+
 
 var app = express();
 //assign our core's config to be the ndconfig instance loaded from index
@@ -50,6 +54,10 @@ var cors = ndconfig.MiddleWare('cors', function() {
         }
     });
 });
+//middle ware for populating our request body
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
 //now, after our middleware is mounted,
 // mount the rest of the routes and start the app
 
@@ -137,7 +145,8 @@ middleWare.then(function (middlewareResult) {
                             })
                     });
             });
-            app.get('/' + resource + '/all', getAll);
+            var currentGetAll = getAll.bind(this, resource);
+            app.get('/' + resource + '/all/retrieve', currentGetAll);
 
 
             //mount query requests
@@ -156,14 +165,19 @@ middleWare.then(function (middlewareResult) {
                 });
             });
             var currentQuery = queryResource.bind(this, resource);
-            app.get('/' + resource + '/:query/:attribute', currentQuery);
+            app.get('/' + resource + '/query/:query/:attribute', currentQuery);
 
             //mount resource saving
             var saveResource = (function (appResource, req, res) {
                 hx$.log('saving resource {}'.replace('{}', appResource));
                 ndcore.authentication.authenticate(req.headers, appResource, 'set', res).then(function (principle) {
                     res.set("Content-Type", "application/json");
-                    ndcore.interfaces.SetId(appResource, req.body, req.body.id, principle).then(function (element) {
+                    //check for empty request bodies
+                    if(typeof(req.body) == 'undefined')
+                    {
+                        res.status(500).send('invalid request body');
+                    }
+                    ndcore.interfaces.SetId(appResource, req.body.id, req.body, principle).then(function (element) {
                         res.status(200).send(JSON.stringify(element));
                     }).catch(function (error) {
                         handleError(error, res);

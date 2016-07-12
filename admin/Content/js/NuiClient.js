@@ -198,7 +198,7 @@ var root = {};
         var self = this;
         self.title = title;
         self.description = description;
-        self.id = hx$.guid();
+        self.id = hx$.Guid();
     });
 
 
@@ -207,7 +207,7 @@ var root = {};
         return root.AuthorizedRequest(token,
             {
                 type: 'GET',
-                url: root.BaseUri + '/site/all',
+                url: root.BaseUri + '/site/all/retrieve'
             },
             store);
     });
@@ -229,7 +229,7 @@ var root = {};
         return root.AuthorizedRequest(token,
             {
                 type: 'GET',
-                url: root.BaseUri + '/post/all',
+                url: root.BaseUri + '/post/all/retrieve'
             },
             store);
     });
@@ -253,7 +253,7 @@ var root = {};
         return root.AuthorizedRequest(token,
             {
                 type: 'GET',
-                url: root.BaseUri + '/user/all'
+                url: root.BaseUri + '/user/all/retrieve'
             },
             store
         );
@@ -278,7 +278,7 @@ var root = {};
         return root.AuthorizedRequest(token,
             {
                 type: 'GET',
-                url: root.BaseUri + '/image/all'
+                url: root.BaseUri + '/image/all/retrieve'
             },
             store
         );
@@ -303,7 +303,7 @@ var root = {};
         return root.AuthorizedRequest(token,
             {
                 type: 'GET',
-                url: root.BaseUri + '/theme/all'
+                url: root.BaseUri + '/theme/all/retrieve'
             },
             store
         );

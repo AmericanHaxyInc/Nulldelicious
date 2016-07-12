@@ -47,14 +47,15 @@ var Site = NullDelicious.controller("Site", function ($scope, $http, $localStora
         if($scope.DataManager) {
             $scope.DataManager.Get('Site').then(function (data) {
                 $scope.GlobalSites = data;
+                $scope.GlobalSitesData.data = $scope.GlobalSites;
                 $scope.$apply();
             });
         }
     });
 
     var deleteTemplate = nui.Ui.DeleteTemplate;
-    $scope.GlobalSitesColumns = [{field : 'Title'},
-        {field : 'Description'},
+    $scope.GlobalSitesColumns = [{field : 'title', displayName : 'Title'},
+        {field : 'description', displayName: 'Description'},
         {field : 'Delete', cellTemplate: deleteTemplate}
     ];
 
@@ -78,7 +79,7 @@ var Site = NullDelicious.controller("Site", function ($scope, $http, $localStora
     $scope.AddSite = (function(title, description)
     {
         //construct new site
-        var newSite = new $scope.nui.site(title, description);
+        var newSite = new $scope.nui.Site(title, description);
         //attempt write to server
         $scope.DataManager.Set('Site', newSite).then(function(data)
         {
