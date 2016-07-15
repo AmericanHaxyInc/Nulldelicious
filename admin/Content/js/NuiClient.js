@@ -92,7 +92,7 @@ var root = {};
     root.DataManager.prototype.Set = (function (key, value, args) {
         var self = this;
         var storageKey = key;
-        //if branch and campaign are in our args, append them to our storage key for caching purposes
+        //if key and subkey are in our args, append them to our arguments for storage.
         if (args && args['key'] && args['subkey']) {
             storageKey = key + '_' + args['key'] + '_' + args['subkey'];
         }
@@ -103,6 +103,20 @@ var root = {};
         self.storage['Cache'][storageKey] = nowSeconds;
         //update the server, return promise
         return self.interfaces[key].set(self.token, value, null, args);
+    });
+
+    root.DataManager.prototype.Delete = (function (key, value, args)
+    {
+        var self = this;
+        var storageKey = key;
+
+        //now remove the matching item from storage, if we are caching elements
+        if(self.interfaces.cache) {
+            hx$.removeFirst(self.storage[storageKey], function (element) {
+                return element.id === value.id;
+            });
+        }
+        return self.interfaces[key].delete(self.token, value, null, args);
     });
 
     //time convention, seconds since epoch
@@ -132,13 +146,13 @@ var root = {};
         args['dataType'] = 'json';
         args['contentType'] = 'application/json; charset=utf-8';
 
-        $.ajax(args).success(function (response) {
+        $.ajax(args).done(function (response) {
             deferred.resolve(response);
             //call storage function on response if defined
             if (store) {
                 store(response);
             }
-        }).error(function (response) {
+        }).fail(function (response) {
             deferred.reject(response);
         });
         return deferred.promise;
@@ -153,10 +167,10 @@ var root = {};
             type: 'OPTIONS',
             url: root.BaseUri + '/Init',
             data: {}
-        }).success(function(data, textStatus, response)
+        }).done(function(data, textStatus, response)
         {
             deferred.resolve(response);
-        }).error(function(response)
+        }).fail(function(response)
         {
             deferred.reject('Cors preflight failed');
         })
@@ -170,23 +184,15 @@ var root = {};
             url: root.BaseUri + '/User/Login',
             data: {},
             beforeSend: function (xhr) { xhr.setRequestHeader('Authorization', 'Basic {0}'.replace('{0}', encoded)); }
-        }).success(function (data, textStatus, response) {
+        }).done(function (data, textStatus, response) {
             var authResponse = response.getResponseHeader(root.AuthTokenHeader);
             var currentUser = data.user;
             deferred.resolve([authResponse, currentUser]);
-        }).error(function (response) {
+        }).fail(function (response) {
             deferred.reject('Login Failed');
         });
         return deferred.promise;
     });
-
-    /*UI configurations*/
-
-    root.Ui = {
-        DeleteTemplate : '<button class="nui-delete-button"></button>'
-    };
-
-    /*end UI configurations*/
 
 
     /* todo : refactor as method for an angular service */
@@ -223,6 +229,17 @@ var root = {};
             store);
     });
 
+    root.DeleteSite = (function(token, site, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'DELETE',
+                url: root.BaseUri + '/site/' + site.id
+
+            },
+            store);
+    });
+
     /*post*/
     root.GetPosts = (function(token, store)
     {
@@ -244,6 +261,17 @@ var root = {};
             },
             store
         );
+    });
+
+    root.DeletePost = (function(token, post, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'DELETE',
+                url: root.BaseUri + '/post/' + post.id
+
+            },
+            store);
     });
 
     /*users*/
@@ -271,6 +299,17 @@ var root = {};
         );
     });
 
+    root.DeleteUser = (function(token, user, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'DELETE',
+                url: root.BaseUri + '/user/' + user.id
+
+            },
+            store);
+    });
+
     /*images*/
 
     root.GetImages = (function(token, store)
@@ -294,6 +333,17 @@ var root = {};
             },
             store
         );
+    });
+
+    root.DeleteImage = (function(token, image, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'DELETE',
+                url: root.BaseUri + '/image/' + image.id
+
+            },
+            store);
     });
 
     /*themes*/
@@ -321,12 +371,23 @@ var root = {};
         );
     });
 
+    root.DeleteTheme = (function(token, theme, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'DELETE',
+                url: root.BaseUri + '/theme/' + theme.id
+
+            },
+            store);
+    });
+
 root.interfaces = {
-    'Site' : {get : root.GetSites, set : root.AddSite, cache: false},
-    'Post' : {get : root.GetPosts, set : root.AddPost, cache: false},
-    'User' : {get : root.GetUsers, set : root.AddUser, cache: false},
-    'Image' : {get : root.GetImages, set : root.AddImage, cache: false},
-    'Theme' : {get : root.GetThemes, set : root.AddTheme, cache: false}
+    'Site' : {get : root.GetSites, set : root.AddSite, delete : root.DeleteSite, cache: false},
+    'Post' : {get : root.GetPosts, set : root.AddPost, delete : root.DeletePost, cache: false},
+    'User' : {get : root.GetUsers, set : root.AddUser, delete : root.DeleteUser, cache: false},
+    'Image' : {get : root.GetImages, set : root.AddImage, delete : root.DeleteImage, cache: false},
+    'Theme' : {get : root.GetThemes, set : root.AddTheme, delete : root.DeleteTheme, cache: false}
 };
 return root;
 })($, Q, hx$, Base64);

@@ -52,8 +52,9 @@ var Site = NullDelicious.controller("Site", function ($scope, $http, $localStora
             });
         }
     });
+    //Ng grid templates...
+    var deleteTemplate = '<button class="nui-delete-button" ng-click="grid.appScope.RemoveRow(this)"></button>';
 
-    var deleteTemplate = nui.Ui.DeleteTemplate;
     $scope.GlobalSitesColumns = [{field : 'title', displayName : 'Title'},
         {field : 'description', displayName: 'Description'},
         {field : 'Delete', cellTemplate: deleteTemplate}
@@ -62,6 +63,23 @@ var Site = NullDelicious.controller("Site", function ($scope, $http, $localStora
     $scope.GlobalSitesData = {
         data : $scope.GlobalSites,
         columnDefs : $scope.GlobalSitesColumns
+    };
+
+    $scope.RemoveRow = function(element) {
+        var self = this;
+        var index = element.$index;
+        //now get the index of the element that we wish to remove in our collection, and
+        //delete it on the server
+        var siteToDelete = $scope.GlobalSitesData[index];
+        $scope.DataManager.Delete('Site', siteToDelete).then(function(result)
+        {
+            //now, remove the element from our grid
+            $scope.GlobalSitesData.splice(index, 1);
+            $scope.$apply();
+        }).fail(function(error)
+        {
+            $scope.DeleteError = true;
+        });
     };
 
     $scope.RemoveSiteDataByTitle = (function(title)
