@@ -1,5 +1,5 @@
 //route, storage, and grid dependencies
-var NullDelicious = angular.module("Nulldelicious", ["ngRoute", "ngStorage", "ui.grid"]);
+var NullDelicious = angular.module("Nulldelicious", ["ngRoute", "ngStorage", "ngTouch", "ui.grid", "ui.grid.selection"]);
 
 var Main = NullDelicious.controller("Main", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location) {
     //scope nui client scope through controller scope
@@ -35,6 +35,13 @@ var Main = NullDelicious.controller("Main", function ($scope, $http, $localStora
                 $scope.$apply();
             });
     });
+
+    //handle selection change
+    $scope.$on('changeSiteSelection', function (event, args) {
+        //get the title for display, and the id for foreign key filtering
+        $scope.SelectedSite = args.title;
+        $scope.SelectedSiteId = args.id;
+    });
 });
 
 var Site = NullDelicious.controller("Site", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
@@ -62,37 +69,35 @@ var Site = NullDelicious.controller("Site", function ($scope, $http, $localStora
 
     $scope.GlobalSitesData = {
         data : $scope.GlobalSites,
-        columnDefs : $scope.GlobalSitesColumns
+        columnDefs : $scope.GlobalSitesColumns,
+        enableRowSelection: true,
+        enableSelectAll: false,
+        selectionRowHeaderWidth: 35,
+        multiSelect: false
     };
 
     $scope.RemoveRow = function(element) {
         var self = this;
-        var index = element.$index;
+        var targetRow = element.$parent.$parent.row;
+        var targetId = targetRow.entity.id;
         //now get the index of the element that we wish to remove in our collection, and
         //delete it on the server
-        var siteToDelete = $scope.GlobalSitesData[index];
+        var siteToDelete = hx$.single($scope.GlobalSitesData.data, function(site)
+        {
+            return site.id === targetId;
+        });
+
         $scope.DataManager.Delete('Site', siteToDelete).then(function(result)
         {
             //now, remove the element from our grid
-            $scope.GlobalSitesData.splice(index, 1);
+            var index = $scope.GlobalSitesData.data.indexOf(siteToDelete);
+            $scope.GlobalSitesData.data.splice(index, 1);
             $scope.$apply();
         }).fail(function(error)
         {
             $scope.DeleteError = true;
         });
     };
-
-    $scope.RemoveSiteDataByTitle = (function(title)
-    {
-        //find the element to remove.
-        var index = $scope.GlobalSitesData.data.indexOf(title);
-        //show modal confirming deletion
-
-        //make call to server to delete
-
-        //remove from collection
-        $scope.GlobalSitesData.data.splice(index, 1);
-    });
 
     $scope.AddSite = (function(title, description)
     {
@@ -102,7 +107,8 @@ var Site = NullDelicious.controller("Site", function ($scope, $http, $localStora
         $scope.DataManager.Set('Site', newSite).then(function(data)
         {
             //if successful, add to our global site data collection
-            $scope.GlobalSitesData.push(newSite);
+            $scope.GlobalSitesData.data.push(newSite);
+            $scope.$apply();
         }).fail(function(error)
         {
             //if write fails, set our error and show an error modal
@@ -113,72 +119,93 @@ var Site = NullDelicious.controller("Site", function ($scope, $http, $localStora
     /*start by getting sites*/
 
     $scope.GetSites();
+
+    //now register grid API's, specifically, our onchange function when we change the site selection
+    $scope.GlobalSitesData.onRegisterApi = function(gridApi){
+    //set gridApi on scope
+    $scope.gridApi = gridApi;
+    gridApi.selection.on.rowSelectionChanged($scope,function(row){
+        //emit a selected site change event so that we can
+        var selectedSite = row.entity;
+        $scope.$emit('changeSiteSelection', selectedSite);
+    });
+};
 });
 var Editor = NullDelicious.controller("Editor", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
 {
     //scope nui client scope through controller scope
     $scope.nui = nui;
-    //todo: remove fixture data
-    $scope.Posts = [
+
+    $scope.GetPosts = (function()
+    {
+        if($scope.DataManager)
         {
-            "id" : "1",
-            "title" : "Star Wars Battlefront",
-            "body" : "lorem ipsum dolores si amet",
-            "date" : new Date(),
-            "comments" : ["this is a set", "of comments"],
-            "tags" : ["star wars", "games"],
-            "author_name" : "David Dworetzky",
-            "site_title" : "David's Blog",
-            "site_description" : "David's Blog"
-        },
-        {
-            "id" : "1",
-            "title" : "Star Wars Battlefront continued",
-            "body" : "lorem ipsum dolores si amet amet dolores sit ipsum",
-            "date" : new Date(),
-            "comments" : ["this is another set", "of comments"],
-            "tags" : ["star wars", "games"],
-            "author_name" : "David Dworetzky",
-            "site_title" : "David's Blog",
-            "site_description" : "David's Blog"
+            $scope.DataManager.Get('Post', {
+                query: {key: 'site_id', value : $scope.SelectedSiteId}
+            }).then(function (data) {
+                $scope.Posts = data;
+                $scope.$apply();
+            });
         }
-    ]
+    });
+
+    $scope.GetPosts();
 });
 var Images = NullDelicious.controller("Images", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
 {
-    $scope.nui = nui;
-    //todo: remove fixture data
-    $scope.Images = [];
 
+    $scope.nui = nui;
+    $scope.GetImages = (function()
+    {
+        if($scope.DataManager)
+        {
+            $scope.DataManager.Get('Image', {
+                query: {key: 'site_id', value : $scope.SelectedSiteId}
+            }).then(function(data){
+                $scope.Images = data;
+                $scope.$apply();
+            })
+        }
+    });
+
+    $scope.GetImages();
 });
 var Styles = NullDelicious.controller("Styles", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
 {
     $scope.nui = nui;
-    //todo: remove fixture data
-    $scope.Styles = [];
+    $scope.GetStyles = (function()
+    {
+        if($scope.DataManager)
+        {
+            $scope.DataManager.Get('Theme', {
+                query: {key: 'site_id', value : $scope.SelectedSiteId}
+            }).then(function(data)
+            {
+                $scope.Styles = data;
+                $scope.$apply();
+            });
+        }
+    });
+
+    $scope.GetStyles();
 });
 var Users = NullDelicious.controller("Users", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
 {
     //scope nui client scope through controller scope
     $scope.nui = nui;
-    //todo: remove fixture data
-    $scope.GlobalUsers = [
-        {
-            "id" : "1",
-            "name" : "ddworetzky",
-            "first" : "David",
-            "last" : "Dworetzky",
-            "email" : "fakeemail@gmail.com",
-            "gender" : "male",
-            "date" : new Date(),
-            "password" : "",
-            "site_title" : "David's Blog",
-            "site_description" : "David's Blog",
-            "role_name" : "admin",
-            "role_access" : []
-        }
 
-    ]
+    $scope.GetUsers = (function()
+    {
+        $scope.DataManager.Get('User', {
+            query: {key: 'site_id', value : $scope.SelectedSiteId}
+        }).then(function(data)
+        {
+            $scope.Users = data;
+            $scope.$apply();
+        });
+    });
+
+    $scope.GetUsers();
 });
 NullDelicious.config(['$routeProvider',
     function($routeProvider, $locationProvider){

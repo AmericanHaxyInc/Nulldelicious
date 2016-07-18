@@ -10,6 +10,7 @@
     <script type="text/javascript" src="../lib/HaxyClosures.js"></script>
     <script type="text/javascript" src="../js/bower_components/jquery/dist/jquery.min.js" ></script>
     <script type="text/javascript" src="../js/bower_components/angular/angular.min.js"></script>
+    <script type="text/javascript" src="../js/bower_components/angular-touch/angular-touch.min.js"></script>
     <script type="text/javascript" src="../js/bower_components/angular-route/angular-route.min.js"></script>
     <script type="text/javascript" src="../js/underscore.min.js"></script>
     <script type="text/javascript" src="../js/q.js"></script>
@@ -64,6 +65,10 @@
         </ul>
     </nav>
 
+    <!-- we show our breadcrumbs if our selected site is a well defined value -->
+    <div id="BreadCrumbs" class="page-section" ng-display="SelectedSite">
+    <h2>{{SelectedSite}}</h2>
+    </div>
     <!--this is where our content goes for each section of the admin -->
     <div id="ContentView" class="page-section" ng-view>
 

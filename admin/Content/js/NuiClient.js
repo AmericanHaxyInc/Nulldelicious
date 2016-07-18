@@ -208,14 +208,28 @@ var root = {};
     });
 
 
-    root.GetSites = (function(token, store)
+    root.GetSites = (function(token, store, args)
     {
-        return root.AuthorizedRequest(token,
-            {
-                type: 'GET',
-                url: root.BaseUri + '/site/all/retrieve'
-            },
-            store);
+        //if a query has not been specified, retrieve all sites
+        if(!args || !args.query) {
+            return root.AuthorizedRequest(token,
+                {
+                    type: 'GET',
+                    url: root.BaseUri + '/site/all/retrieve'
+                },
+                store);
+        }
+        else
+        //otherwise, retrieve sites that match our query
+        {
+            var route = root.BaseUri + '/site/query/{key}/{value}'.replace('{key}', args.query.key).replace('{value}', args.query.value);
+            return root.AuthorizedRequest(token,
+                {
+                    type: 'GET',
+                    url: route
+                },
+                store);
+        }
     });
 
     root.AddSite = (function(token, site, store)
@@ -241,14 +255,28 @@ var root = {};
     });
 
     /*post*/
-    root.GetPosts = (function(token, store)
+    root.GetPosts = (function(token, store, args)
     {
-        return root.AuthorizedRequest(token,
-            {
-                type: 'GET',
-                url: root.BaseUri + '/post/all/retrieve'
-            },
-            store);
+        //if a query has not been specified, retrieve all posts
+        if(!args || !args.query) {
+            return root.AuthorizedRequest(token,
+                {
+                    type: 'GET',
+                    url: root.BaseUri + '/post/all/retrieve'
+                },
+                store);
+        }
+        //otherwise, retrieve posts that match our query
+        else
+        {
+            var route = root.BaseUri + '/post/query/{key}/{value}'.replace('{key}', args.query.key).replace('{value}', args.query.value);
+            return root.AuthorizedRequest(token,
+                {
+                    type: 'GET',
+                    url: route
+                },
+                store);
+        }
     });
 
     root.AddPost = (function(token, post, store)
@@ -276,15 +304,28 @@ var root = {};
 
     /*users*/
 
-    root.GetUsers = (function(token, store)
+    root.GetUsers = (function(token, store, args)
     {
-        return root.AuthorizedRequest(token,
-            {
-                type: 'GET',
-                url: root.BaseUri + '/user/all/retrieve'
-            },
-            store
-        );
+        if(!args || !args.query) {
+            return root.AuthorizedRequest(token,
+                {
+                    type: 'GET',
+                    url: root.BaseUri + '/user/all/retrieve'
+                },
+                store
+            );
+        }
+        //otherwise, retrieve users that match our query
+        else
+        {
+            var route = root.BaseUri + '/user/query/{key}/{value}'.replace('{key}', args.query.key).replace('{value}', args.query.value);
+            return root.AuthorizedRequest(token,
+                {
+                    type: 'GET',
+                    url: route
+                },
+                store);
+        }
     });
 
     root.AddUser = (function(token, user, store)
@@ -312,15 +353,28 @@ var root = {};
 
     /*images*/
 
-    root.GetImages = (function(token, store)
+    root.GetImages = (function(token, store, args)
     {
-        return root.AuthorizedRequest(token,
-            {
-                type: 'GET',
-                url: root.BaseUri + '/image/all/retrieve'
-            },
-            store
-        );
+        if(!args || !args.query) {
+            return root.AuthorizedRequest(token,
+                {
+                    type: 'GET',
+                    url: root.BaseUri + '/image/all/retrieve'
+                },
+                store
+            );
+        }
+        //otherwise, retrieve images that match our query
+        else
+        {
+            var route = root.BaseUri + '/image/query/{key}/{value}'.replace('{key}', args.query.key).replace('{value}', args.query.value);
+            return root.AuthorizedRequest(token,
+                {
+                    type: 'GET',
+                    url: route
+                },
+                store);
+        }
     });
 
     root.AddImage = (function(token, image, store)
@@ -348,15 +402,28 @@ var root = {};
 
     /*themes*/
 
-    root.GetThemes = (function(token, store)
+    root.GetThemes = (function(token, store, args)
     {
-        return root.AuthorizedRequest(token,
+        if(!args || !args.query) {
+            return root.AuthorizedRequest(token,
+                {
+                    type: 'GET',
+                    url: root.BaseUri + '/theme/all/retrieve'
+                },
+                store
+            );
+            //otherwise, retrieve themes that match our query
+        }
+        else
             {
-                type: 'GET',
-                url: root.BaseUri + '/theme/all/retrieve'
-            },
-            store
-        );
+                var route = root.BaseUri + '/post/theme/{key}/{value}'.replace('{key}', args.query.key).replace('{value}', args.query.value);
+                return root.AuthorizedRequest(token,
+                    {
+                        type: 'GET',
+                        url: route
+                    },
+                    store);
+            }
     });
 
     root.AddTheme = (function(token, theme, store)
