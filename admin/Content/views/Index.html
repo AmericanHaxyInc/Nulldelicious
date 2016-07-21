@@ -6,6 +6,11 @@
     <link href='../css/jura.css' rel='stylesheet' type='text/css'>
     <link href='../css/orbitron.css' rel='stylesheet' type='text/css'>
     <link href="../css/ui-grid.min.css" rel="stylesheet" type="text/css">
+
+    <!-- skeleton css -->
+    <!--<link href="../css/skeleton.css" rel="stylesheet" type="text/css">
+    <link href="../css/normalize.css" rel="stylesheet" type="text/css">-->
+
     <script type="text/javascript" src="../js/base64.js"></script>
     <script type="text/javascript" src="../lib/HaxyClosures.js"></script>
     <script type="text/javascript" src="../js/bower_components/jquery/dist/jquery.min.js" ></script>
@@ -66,8 +71,10 @@
     </nav>
 
     <!-- we show our breadcrumbs if our selected site is a well defined value -->
-    <div id="BreadCrumbs" class="page-section" ng-display="SelectedSite">
-    <h2>{{SelectedSite}}</h2>
+    <div id="BreadCrumbs" class="page-section" ng-hide="!SelectedSite">
+        <div id="SiteIcon" class="nui-site-icon" style="float:left;margin-left:5px"></div>
+        <h2 style="float:left;margin-left:5%">{{SelectedSite}}</h2>
+
     </div>
     <!--this is where our content goes for each section of the admin -->
     <div id="ContentView" class="page-section" ng-view>

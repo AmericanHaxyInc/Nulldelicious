@@ -416,7 +416,7 @@ var root = {};
         }
         else
             {
-                var route = root.BaseUri + '/post/theme/{key}/{value}'.replace('{key}', args.query.key).replace('{value}', args.query.value);
+                var route = root.BaseUri + '/theme/query/{key}/{value}'.replace('{key}', args.query.key).replace('{value}', args.query.value);
                 return root.AuthorizedRequest(token,
                     {
                         type: 'GET',
