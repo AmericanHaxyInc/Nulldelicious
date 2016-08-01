@@ -70,7 +70,7 @@ nav li:first-child
     cursor: default;
   }
   ul.nui-nav-right input {
-    width : @block * 8;
+    min-width : @block * 8;
     padding-left: @block * 2;
     .nui-rounded;
   }
@@ -140,7 +140,8 @@ nav li:first-child
 
   ul.nui-nav-right input
   {
-    width : @block * 8;
+    min-width : @block * 8;
+    max-width: @block * 16;
     padding-left: @block * 2;
     .nui-rounded
   }
@@ -224,7 +225,6 @@ nav li:first-child
   font-size: @bodysize;
   font-family: @bodyfont;
   .nui-form-spacing;
-
 }
 
 .nui-rounded
@@ -235,6 +235,18 @@ nav li:first-child
 }
 
 .nui-form input
+{
+  .nui-form-spacing;
+  padding-left: @block * 4;
+  border-radius: 2em;
+  min-width: 300px;
+  color:@primaryinvert;
+  border-color: @oblack;
+  font-size: @bodysize;
+  font-family: @bodyfont;
+}
+
+.nui-form textarea
 {
   .nui-form-spacing;
   padding-left: @block * 4;

@@ -6,6 +6,14 @@ var nui = (function($, Q, hx$, Base64)
 {
 var root = {};
 
+    /* UI components */
+
+    root.ui =
+    {
+        deleteTemplate : '<button class="nui-delete-button" ng-click="grid.appScope.RemoveRow(this)"></button>'
+    };
+    /*nui types */
+
     root.NavTypes =
     {
         Main : 0,
@@ -195,6 +203,8 @@ var root = {};
     });
 
 
+
+
     /* todo : refactor as method for an angular service */
 
     /* site*/
@@ -207,6 +217,20 @@ var root = {};
         self.id = hx$.Guid();
     });
 
+    /* post */
+    /*post constructor*/
+    root.Post = (function(title, body, tags, siteId)
+    {
+        var self = this;
+        self.title = title;
+        /*html body*/
+        self.body = body;
+        self.tags = tags;
+        self.id = hx$.Guid();
+        self.siteId = siteId;
+        self.published = true;
+        self.date = new Date();
+    });
 
     root.GetSites = (function(token, store, args)
     {
@@ -284,8 +308,8 @@ var root = {};
         return root.AuthorizedRequest(token,
             {
                 type: 'POST',
-                url: root.BaseUri + '/site',
-                data: Json.stringify(post)
+                url: root.BaseUri + '/post',
+                data: JSON.stringify(post)
             },
             store
         );
@@ -334,7 +358,7 @@ var root = {};
             {
                 type: 'POST',
                 url: root.BaseUri + '/user',
-                data: Json.stringify(user)
+                data: JSON.stringify(user)
             },
             store
         );
@@ -383,7 +407,7 @@ var root = {};
             {
                 type: 'POST',
                 url: root.BaseUri + '/image',
-                data : json.stringify(image)
+                data : JSON.stringify(image)
             },
             store
         );
@@ -432,7 +456,7 @@ var root = {};
             {
                 type: 'POST',
                 url: root.BaseUri + '/theme',
-                data : json.stringify(theme)
+                data : JSON.stringify(theme)
             },
             store
         );

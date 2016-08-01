@@ -60,7 +60,7 @@ var Site = NullDelicious.controller("Site", function ($scope, $http, $localStora
         }
     });
     //Ng grid templates...
-    var deleteTemplate = '<button class="nui-delete-button" ng-click="grid.appScope.RemoveRow(this)"></button>';
+    var deleteTemplate = nui.ui.deleteTemplate;
 
     $scope.GlobalSitesColumns = [{field : 'title', displayName : 'Title'},
         {field : 'description', displayName: 'Description'},
@@ -136,19 +136,112 @@ var Editor = NullDelicious.controller("Editor", function ($scope, $http, $localS
     //scope nui client scope through controller scope
     $scope.nui = nui;
 
+    //set editor columns and data
+
+    var deleteTemplate = nui.ui.deleteTemplate;
+
+    $scope.EditorColumns = [{field : 'title', displayName : 'Title'},
+        {field : 'body', displayName: 'Body'},
+        {field : 'Delete', cellTemplate: deleteTemplate},
+        {field : 'tags', displayName: 'Tags'},
+        {field : 'siteId', displayName: 'SiteId'},
+        {field : 'published', displayName: 'Published'}
+    ];
+
+    $scope.EditorData = {
+        data : $scope.Posts,
+        columnDefs : $scope.EditorColumns,
+        enableRowSelection: true,
+        enableSelectAll: false,
+        selectionRowHeaderWidth: 35,
+        multiSelect: false
+    };
+    /*remove row functionality */
+    $scope.RemoveRow = function(element) {
+        var self = this;
+        var targetRow = element.$parent.$parent.row;
+        var targetId = targetRow.entity.id;
+        //now get the index of the element that we wish to remove in our collection, and
+        //delete it on the server
+        var postToDelete = hx$.single($scope.EditorData.data, function(post)
+        {
+            return post.id === targetId;
+        });
+
+        $scope.DataManager.Delete('Post', postToDelete).then(function(result)
+        {
+            //now, remove the element from our grid
+            var index = $scope.EditorData.data.indexOf(postToDelete);
+            $scope.EditorData.data.splice(index, 1);
+            $scope.$apply();
+        }).fail(function(error)
+        {
+            $scope.DeleteError = true;
+        });
+    };
+    //post states >> either adding posts or editing them
+    var postStates =
+    {
+        Add: 0,
+        Save: 1
+    };
+    //tag constructor
+    var tag = (function(text)
+    {
+        var self = this;
+        self.text = text;
+    });
+    var defaultTags = [new tag('')];
+    $scope.Tags = defaultTags;
     $scope.GetPosts = (function()
     {
         if($scope.DataManager)
         {
             $scope.DataManager.Get('Post', {
-                query: {key: 'site_id', value : $scope.SelectedSiteId}
+                query: {key: 'siteId', value : $scope.SelectedSiteId}
             }).then(function (data) {
                 $scope.Posts = data;
+                $scope.EditorData.data = $scope.Posts;
                 $scope.$apply();
             });
         }
     });
+    //add tags
+    $scope.AddTag = (function()
+    {
+        $scope.Tags.push(new tag(''));
+    });
 
+    //default state is add
+    $scope.PostActionState = postStates.Add;
+    $scope.PostActionDescriptor = (function()
+    {
+        return hx$.GetKeyByValue(postStates, $scope.PostActionState) + ' Post';
+    });
+
+    $scope.PostAction = (function()
+    {
+        if($scope.PostActionState == postStates.Add)
+        {
+            //transform tags
+            var tags = _.map($scope.Tags, function(key)
+            {
+                return {name : key.text};
+            });
+            var post = new nui.Post($scope.PostTitle, $scope.PostBody, tags, $scope.SelectedSiteId);
+            //if we are in add state, grab our model data, new up a post, update the server
+            //and update our grid model
+            $scope.DataManager.Set('Post', post).then(function(data)
+            {
+                $scope.EditorData.data.push(data);
+                $scope.$apply();
+            });
+        }
+        else if($scope.PostActionState == postStates.Save)
+        {
+            //otherwise, send an update of the selected post model to the server
+        }
+    });
     $scope.GetPosts();
 });
 var Images = NullDelicious.controller("Images", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
@@ -160,7 +253,7 @@ var Images = NullDelicious.controller("Images", function ($scope, $http, $localS
         if($scope.DataManager)
         {
             $scope.DataManager.Get('Image', {
-                query: {key: 'site_id', value : $scope.SelectedSiteId}
+                query: {key: 'siteId', value : $scope.SelectedSiteId}
             }).then(function(data){
                 $scope.Images = data;
                 $scope.$apply();
@@ -178,7 +271,7 @@ var Styles = NullDelicious.controller("Styles", function ($scope, $http, $localS
         if($scope.DataManager)
         {
             $scope.DataManager.Get('Theme', {
-                query: {key: 'site_id', value : $scope.SelectedSiteId}
+                query: {key: 'siteId', value : $scope.SelectedSiteId}
             }).then(function(data)
             {
                 $scope.Styles = data;
@@ -197,7 +290,7 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
     $scope.GetUsers = (function()
     {
         $scope.DataManager.Get('User', {
-            query: {key: 'site_id', value : $scope.SelectedSiteId}
+            query: {key: 'siteId', value : $scope.SelectedSiteId}
         }).then(function(data)
         {
             $scope.Users = data;

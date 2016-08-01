@@ -1,12 +1,20 @@
 <h2>Posts</h2>
-<div ui-grid="{data: Posts}">
+<div ui-grid="EditorData">
 </div>
 
 <div class="page-section nui-form">
     <div class="nui-form-group">
-        <label>Post Id</label><input id="PostId" type="text"/>
+        <label for="PostTitle">Post Title</label><input id="PostTitle" type="text" ng-model="PostTitle"/>
     </div>
     <div class="nui-form-group">
-        <label>Post Content</label><textarea id="PostContent"></textarea>
+        <label for="PostBody">Post Body</label><textarea id="PostBody" ng-model="PostBody"></textarea>
+    </div>
+    <div class="nui-form-group">
+        <span ng-repeat="tag in Tags"><label>Tag</label><input type="text" ng-model="tag.text"/></span>
+        <button class="nui-add-button" ng-click="AddTag()"></button>
+    </div>
+    <div class="nui-form-group">
+        <!-- save / add post button -->
+        <button style="margin-left:20px;" class="nui-highlight-button nui-highlight" ng-click="PostAction()">{{PostActionDescriptor()}}</button>
     </div>
 </div>
