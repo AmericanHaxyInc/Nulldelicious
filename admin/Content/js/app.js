@@ -55,6 +55,16 @@ var Site = NullDelicious.controller("Site", function ($scope, $http, $localStora
             $scope.DataManager.Get('Site').then(function (data) {
                 $scope.GlobalSites = data;
                 $scope.GlobalSitesData.data = $scope.GlobalSites;
+                //select an initial row if $scope.SelectedSiteId is set
+                //modify rows so that we can make a row selection
+                $scope.gridApi.grid.modifyRows($scope.GlobalSitesData.data);
+                var selectedSite = hx$.single($scope.GlobalSitesData.data, function(dt)
+                {
+                    return dt.id === $scope.SelectedSiteId;
+                });
+                if(selectedSite) {
+                    $scope.gridApi.selection.selectRow(selectedSite);
+                }
                 $scope.$apply();
             });
         }
@@ -124,11 +134,13 @@ var Site = NullDelicious.controller("Site", function ($scope, $http, $localStora
     $scope.GlobalSitesData.onRegisterApi = function(gridApi){
     //set gridApi on scope
     $scope.gridApi = gridApi;
+
     gridApi.selection.on.rowSelectionChanged($scope,function(row){
         //emit a selected site change event so that we can
         var selectedSite = row.entity;
         $scope.$emit('changeSiteSelection', selectedSite);
     });
+
 };
 });
 var Editor = NullDelicious.controller("Editor", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
