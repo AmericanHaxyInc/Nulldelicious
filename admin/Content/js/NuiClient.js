@@ -472,13 +472,75 @@ var root = {};
             },
             store);
     });
+    /*roles */
+
+    root.GetRoles = (function(token, store, args)
+    {
+        if(!args || !args.query) {
+            return root.AuthorizedRequest(token,
+                {
+                    type: 'GET',
+                    url: root.BaseUri + '/role/all/retrieve'
+                },
+                store
+            );
+            //otherwise, retrieve themes that match our query
+        }
+        else
+        {
+            var route = root.BaseUri + '/role/query/{key}/{value}'.replace('{key}', args.query.key).replace('{value}', args.query.value);
+            return root.AuthorizedRequest(token,
+                {
+                    type: 'GET',
+                    url: route
+                },
+                store);
+        }
+    });
+
+    root.AddRole = (function(token, theme, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'POST',
+                url: root.BaseUri + '/role',
+                data : JSON.stringify(theme)
+            },
+            store
+        );
+    });
+
+    root.DeleteRole = (function(token, theme, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'DELETE',
+                url: root.BaseUri + '/role/' + theme.id
+
+            },
+            store);
+    });
+
+    /* preset calls, and specific endpoints */
+    root.GetPresetSchemas = (function (token, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'GET',
+                url: root.BaseUri + '/preset/schemas'
+            },
+        store);
+    });
 
 root.interfaces = {
     'Site' : {get : root.GetSites, set : root.AddSite, delete : root.DeleteSite, cache: false},
     'Post' : {get : root.GetPosts, set : root.AddPost, delete : root.DeletePost, cache: false},
     'User' : {get : root.GetUsers, set : root.AddUser, delete : root.DeleteUser, cache: false},
     'Image' : {get : root.GetImages, set : root.AddImage, delete : root.DeleteImage, cache: false},
-    'Theme' : {get : root.GetThemes, set : root.AddTheme, delete : root.DeleteTheme, cache: false}
+    'Theme' : {get : root.GetThemes, set : root.AddTheme, delete : root.DeleteTheme, cache: false},
+    'Role' : {get : root.GetRoles, set : root.AddRole, delete : root.DeleteRole, cache: false},
+    /* preset schema call -> for bootstrapped data */
+    'Presets' : {get : root.GetPresetSchemas, cache: false}
 };
 return root;
 })($, Q, hx$, Base64);

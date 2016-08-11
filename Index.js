@@ -1,5 +1,6 @@
 var fs = require('fs');
 var express = require('express');
+var ndschemas = require('./lib/NdSchemas.js');
 var ndcore = require('./lib/Ndcore.js');
 var http = require('http');
 var https = require('https');
@@ -107,10 +108,25 @@ middleWare.then(function (middlewareResult) {
         });
     });
 
+//enabled schemas and presets mount
+    app.get('/preset/schemas', function(req, res) {
+        hx$.log('call to retrieve schemas');
+        res.set("Content-Type", "application/json");
+        //send the json representation of our schemas
+        var schemas = ndschemas.Json;
+        //along with the json representation of role types
+        var roleTypes = ['get', 'set', 'delete'];
+        var response = {
+            schemas: schemas,
+            roles : roleTypes
+        };
+        res.status(200).send(JSON.stringify(response));
+    });
+
 
 //mount all get requests for models
-    for (var resource in ndcore.Json) {
-        if (ndcore.Json.hasOwnProperty(resource)) {
+    for (var resource in ndschemas.Json) {
+        if (ndschemas.Json.hasOwnProperty(resource)) {
             //mount get by id
             var getResource = (function (appResource, req, res) {
                 //only follow this route if it is not a login route, that's why we place the login route first

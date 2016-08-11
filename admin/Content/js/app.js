@@ -251,10 +251,46 @@ var Editor = NullDelicious.controller("Editor", function ($scope, $http, $localS
         }
         else if($scope.PostActionState == postStates.Save)
         {
-            //otherwise, send an update of the selected post model to the server
+            //modify selected post with edited body, title, tags
+            $scope.SelectedPost.body = $scope.PostBody;
+            $scope.SelectedPost.title = $scope.PostTitle;
+            $scope.SelectedPost.tags = _.map($scope.Tags, function(key)
+            {
+                return {name : key.text};
+            });
+
+
+            //now write back to the server, update the grid collection in the UI
+            $scope.DataManager.Set('Post', $scope.SelectedPost).then(function(data)
+            {
+                var gridPost = hx$.single($scope.EditorData.data, function(entry)
+                {
+                    return entry.id === $scope.SelectedPost.id;
+                });
+                gridPost = data;
+                $scope.$apply();
+            })
         }
     });
     $scope.GetPosts();
+
+    $scope.EditorData.onRegisterApi = function(gridApi) {
+        //set gridApi on scope
+        $scope.gridApi = gridApi;
+        //post selection in grid
+        gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+            //emit a selected site change event so that we can
+            var selectedPost = row.entity;
+            $scope.SelectedPost = selectedPost;
+            $scope.PostBody = selectedPost.body;
+            $scope.PostTitle = selectedPost.title;
+            $scope.Tags = _.map(selectedPost.tags, function (t) {
+                return new tag(t.name);
+            });
+            //switch to save state
+            $scope.PostActionState = postStates.Save;
+        });
+    };
 });
 var Images = NullDelicious.controller("Images", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
 {
@@ -312,6 +348,28 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
 
     $scope.GetUsers();
 });
+
+var Roles = NullDelicious.controller("Roles", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
+{
+   $scope.nui = nui;
+
+    $scope.GetPresets = (function()
+    {
+        if($scope.DataManager) {
+            $scope.DataManager.Get('Presets').then(function (data) {
+                //assign result to scope value for role grid
+                $scope.roleDefinitions = data;
+                //assign only keys to roledefinitions - we don't want to show the whole schema
+                $scope.roleDefinitions.schemas = _.map($scope.roleDefinitions.schemas, function (value, key) {
+                    return key;
+                });
+                $scope.$apply();
+            });
+        }
+    });
+
+    $scope.GetPresets();
+});
 NullDelicious.config(['$routeProvider',
     function($routeProvider, $locationProvider){
         $routeProvider.when('/Editor', {
@@ -321,4 +379,5 @@ NullDelicious.config(['$routeProvider',
             .when('/Users',{templateUrl: 'Users.html', controller : "Users"})
             .when('/Styles',{templateUrl: 'Styles.html', controller: "Styles"})
             .when('/Images',{templateUrl: 'Images.html', controller: "Images"})
+            .when('/Roles', {templateUrl: 'Roles.html', controller: "Roles"})
     }]);
