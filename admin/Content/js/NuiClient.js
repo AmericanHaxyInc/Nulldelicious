@@ -232,6 +232,32 @@ var root = {};
         self.date = new Date();
     });
 
+    /*role */
+    /* role constructor */
+    root.Role = (function(name, siteScoped, userScoped, access, siteId)
+    {
+        var self = this;
+        self.id = hx$.Guid();
+        self.name = name;
+        self.siteScoped = siteScoped;
+        self.userScoped = userScoped;
+
+        //convert access arrays to schema format that the server expects
+        var convertedAccess = _.map(access, function(object)
+        {
+            var convertedActions = _.map(object.actions, function(action)
+            {
+                return {name : action};
+            });
+            return {resource: object.resource, actions: convertedActions};
+        });
+        //use this converted format instead
+        self.access = convertedAccess;
+
+
+        self.siteId = siteId;
+    });
+
     root.GetSites = (function(token, store, args)
     {
         //if a query has not been specified, retrieve all sites

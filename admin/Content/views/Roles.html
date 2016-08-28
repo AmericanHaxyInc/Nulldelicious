@@ -1,5 +1,5 @@
 <h2> Roles </h2>
-<div ui-grid="{data : Roles}">
+<div ui-grid="RoleData" ui-grid-selection>
 </div>
 
 <h2>Role Presets</h2>
@@ -23,8 +23,13 @@
     <table id="RoleTable">
         <tr ng-repeat="schema in roleDefinitions.schemas">
             <td>{{schema}}</td>
-            <td ng-repeat="action in roleDefinitions.roles"><button>{{action}}</button></td>
+            <td ng-repeat="action in roleDefinitions.roles"><button ng-click="ToggleRole(schema, action)" ng-class="{'nui-highlight-button' : Highlighted(schema, action)}">{{action}}</button></td>
         </tr>
     </table>
+
+    <div class="nui-form-group">
+        <!-- save / add post button -->
+        <button style="margin-left:20px;" class="nui-highlight-button nui-highlight" ng-click="RoleAction()">{{RoleActionDescriptor()}}</button>
+    </div>
 
 </div>

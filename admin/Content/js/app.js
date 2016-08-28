@@ -349,13 +349,55 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
     $scope.GetUsers();
 });
 
-var Roles = NullDelicious.controller("Roles", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
-{
-   $scope.nui = nui;
+var Roles = NullDelicious.controller("Roles", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location) {
+    $scope.nui = nui;
 
-    $scope.GetPresets = (function()
+    var roleStates =
     {
-        if($scope.DataManager) {
+        Add: 0,
+        Save: 1
+    };
+
+    //default state is add
+    $scope.RoleActionState = roleStates.Add;
+    $scope.RoleActionDescriptor = (function () {
+        return hx$.GetKeyByValue(roleStates, $scope.RoleActionState) + ' Role';
+    });
+
+    var deleteTemplate = nui.ui.deleteTemplate;
+
+    $scope.RoleColumns = [{field: 'name', displayName: 'Name'},
+        {field: 'access', displayName: 'Access'},
+        {field: 'siteScoped', displayName: 'Site Scoped'},
+        {field: 'userScoped', displayName: 'User Scoped'},
+        {field: 'Delete', cellTemplate: deleteTemplate}
+    ];
+
+    $scope.RoleData = {
+        data: $scope.Roles,
+        columnDefs: $scope.RoleColumns,
+        enableRowSelection: true,
+        enableSelectAll: false,
+        selectionRowHeaderWidth: 35,
+        multiSelect: false
+    };
+
+    $scope.GetRoles = (function () {
+        if ($scope.DataManager) {
+            $scope.DataManager.Get('Role', {
+                query: {key: 'siteId', value: $scope.SelectedSiteId}
+            }).then(function (data) {
+                if (data.length > 0) {
+                    $scope.Roles = data;
+                    $scope.RoleData.data = $scope.Roles;
+                    $scope.$apply();
+                }
+            });
+        }
+    });
+
+    $scope.GetPresets = (function () {
+        if ($scope.DataManager) {
             $scope.DataManager.Get('Presets').then(function (data) {
                 //assign result to scope value for role grid
                 $scope.roleDefinitions = data;
@@ -363,12 +405,86 @@ var Roles = NullDelicious.controller("Roles", function ($scope, $http, $localSto
                 $scope.roleDefinitions.schemas = _.map($scope.roleDefinitions.schemas, function (value, key) {
                     return key;
                 });
+
+                $scope.DefaultRoleAccess = _.map($scope.roleDefinitions.schemas, function (value, key) {
+                    return {resource: value, actions: []};
+                });
+
                 $scope.$apply();
             });
         }
     });
 
+    //toggle role action - whether it is on or off for this scope
+    $scope.ToggleRole = (function (schema, action) {
+        //get the object that matches the role access
+        //now add or remove it from the access array
+        var access = hx$.single($scope.DefaultRoleAccess, function (element) {
+            return element.resource == schema;
+        });
+        if (access.actions.indexOf(action) == -1) {
+            access.actions.push(action);
+        }
+        else {
+            hx$.removeFirst(access.actions, function (element) {
+                return element == action;
+            });
+        }
+    });
+
+    //whether or not we should display our button as highlighted
+
+    $scope.Highlighted = (function (schema, action)
+    {
+        var access = hx$.single($scope.DefaultRoleAccess, function(element) {
+            return element.resource == schema;
+
+        });
+        //if our schema, action pair already exists, then we want to highlight this role in the UI
+        return access.actions.indexOf(action) > -1;
+    });
+
+
+    //role save/write action
+
+    $scope.RoleAction = (function () {
+        //add state
+        if ($scope.RoleActionState == roleStates.Add) {
+            var role = new nui.Role($scope.RoleName, $scope.UserScopedRole, $scope.SiteScopedRole, $scope.DefaultRoleAccess, $scope.SelectedSiteId)
+            $scope.DataManager.Set('Role', role).then(function (data) {
+                $scope.RoleData.data.push(data);
+                $scope.$apply();
+            });
+        }
+        //save state
+        else if ($scope.RoleActionState == roleStates.Save) {
+            var role = new nui.Role($scope.RoleName, $scope.UserScopedRole, $scope.SiteScopedRole, $scope.DefaultRoleAccess, $scope.SelectedRole.siteId);
+            $scope.DataManager.Set('Role', role).then(function (data) {
+                //on save, modify the element in the grid
+                var gridRole = hx$.single($scope.RoleData.data, function (rl) {
+                    return rl.id == $scope.SelectedRole.id;
+                });
+                gridRole = data;
+                $scope.$apply();
+            });
+        }
+
+    });
+
+    //get presets for our role scope
     $scope.GetPresets();
+    //get roles for our present site selection
+    $scope.GetRoles();
+
+    //register grid API's
+    $scope.RoleData.onRegisterApi = function (gridApi) {
+        //set gridApi on scope
+        $scope.gridApi = gridApi;
+
+        gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+            //this is where we set our currently selected
+        });
+    };
 });
 NullDelicious.config(['$routeProvider',
     function($routeProvider, $locationProvider){
