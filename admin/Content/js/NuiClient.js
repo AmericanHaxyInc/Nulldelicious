@@ -234,10 +234,16 @@ var root = {};
 
     /*role */
     /* role constructor */
-    root.Role = (function(name, siteScoped, userScoped, access, siteId)
+    root.Role = (function(name, siteScoped, userScoped, access, siteId, id)
     {
         var self = this;
-        self.id = hx$.Guid();
+        if(!id) {
+            self.id = hx$.Guid();
+        }
+        else
+        {
+            self.id = id;
+        }
         self.name = name;
         self.siteScoped = siteScoped;
         self.userScoped = userScoped;

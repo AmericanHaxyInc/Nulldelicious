@@ -450,7 +450,7 @@ var Roles = NullDelicious.controller("Roles", function ($scope, $http, $localSto
     $scope.RoleAction = (function () {
         //add state
         if ($scope.RoleActionState == roleStates.Add) {
-            var role = new nui.Role($scope.RoleName, $scope.UserScopedRole, $scope.SiteScopedRole, $scope.DefaultRoleAccess, $scope.SelectedSiteId)
+            var role = new nui.Role($scope.RoleName, $scope.UserScopedRole, $scope.SiteScopedRole, $scope.DefaultRoleAccess, $scope.SelectedSiteId);
             $scope.DataManager.Set('Role', role).then(function (data) {
                 $scope.RoleData.data.push(data);
                 $scope.$apply();
@@ -458,7 +458,7 @@ var Roles = NullDelicious.controller("Roles", function ($scope, $http, $localSto
         }
         //save state
         else if ($scope.RoleActionState == roleStates.Save) {
-            var role = new nui.Role($scope.RoleName, $scope.UserScopedRole, $scope.SiteScopedRole, $scope.DefaultRoleAccess, $scope.SelectedRole.siteId);
+            var role = new nui.Role($scope.RoleName, $scope.UserScopedRole, $scope.SiteScopedRole, $scope.DefaultRoleAccess, $scope.SelectedRole.siteId, $scope.SelectedRole.id);
             $scope.DataManager.Set('Role', role).then(function (data) {
                 //on save, modify the element in the grid
                 var gridRole = hx$.single($scope.RoleData.data, function (rl) {
@@ -471,6 +471,27 @@ var Roles = NullDelicious.controller("Roles", function ($scope, $http, $localSto
 
     });
 
+    //grid row removal
+    $scope.RemoveRow = function(element) {
+        var self = this;
+        var targetRow = element.$parent.$parent.row;
+        var targetId = targetRow.entity.id;
+        //now get the index of the element that we wish to remove in our collection, and
+        //delete it on the server
+        var roleToDelete = hx$.single($scope.RoleData.data, function (role) {
+            return role.id === targetId;
+        });
+
+        $scope.DataManager.Delete('Role', roleToDelete).then(function (result) {
+            //now, remove the element from our grid
+            var index = $scope.RoleData.data.indexOf(roleToDelete);
+            $scope.RoleData.data.splice(index, 1);
+            $scope.$apply();
+        }).fail(function (error) {
+            $scope.DeleteError = true;
+        });
+    };
+
     //get presets for our role scope
     $scope.GetPresets();
     //get roles for our present site selection
@@ -482,7 +503,25 @@ var Roles = NullDelicious.controller("Roles", function ($scope, $http, $localSto
         $scope.gridApi = gridApi;
 
         gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-            //this is where we set our currently selected
+            //this is where we set our currently selected row in scope
+            $scope.SelectedRole = row.entity;
+            $scope.RoleName = $scope.SelectedRole.name;
+            $scope.UserScopedRole = $scope.SelectedRole.userScoped;
+            $scope.SiteScopedRole = $scope.SelectedRole.siteScoped;
+            var access = $scope.SelectedRole.access;
+            //transform access and re-assign it to our scope
+            var convertedAccess = _.map(access, function(object)
+            {
+                var convertedActions = _.map(object.actions, function(action)
+                {
+                    return action.name;
+                });
+                return {resource: object.resource, actions: convertedActions};
+            });
+            $scope.DefaultRoleAccess = convertedAccess;
+
+            //now change our action to a save action
+            $scope.RoleActionState = roleStates.Save;
         });
     };
 });
