@@ -1,6 +1,34 @@
 <h2> Users </h2>
 <div ui-grid="UsersData">
+</div>
 
+<div class="page-section nui-form">
+    <div class="nui-form-group">
+        <label for="username">Username</label> <input id="username" type="text" ng-model="Username"/>
+    </div>
+    <div class="nui-form-group">
+        <label for="firstName">First Name</label> <input id="firstName" type="text" ng-model="FirstName"/>
+    </div>
+    <div class="nui-form-group">
+        <label for="LastName">Last Name</label> <input id="LastName" type="text" ng-model="LastName"/>
+    </div>
+    <div class="nui-form-group">
+        <label for="email">Email</label> <input id="email" type="text" ng-model="Email"/>
+    </div>
+    <div class="nui-form-group">
+        <label for="gender">Gender</label>
+        <select id="gender" ng-model="SelectedGender" ng-options="gender for gender in UserGenders" ng-model="SelectedGender">
+            <option value="">-- choose gender --</option>
+        </select>
+    </div>
+    <div class="nui-form-group">
+        <label for="password">Password</label> <input id="Password" type="password" ng-model="Password"/>
+    </div>
+
+    <div class="nui-form-group">
+        <!-- save / add post button -->
+        <button style="margin-left:20px;" class="nui-highlight-button nui-highlight" ng-click="UserAction()">{{UserActionDescriptor()}}</button>
+    </div>
 
 </div>
 

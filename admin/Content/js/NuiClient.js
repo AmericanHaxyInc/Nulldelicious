@@ -264,6 +264,27 @@ var root = {};
         self.siteId = siteId;
     });
 
+    /*user constructor */
+
+    root.User = (function(id, name, first, last, email, gender, password, siteId, roleId){
+        var self = this;
+        if(!id) {
+            self.id = hx$.Guid();
+        }
+        else
+        {
+            self.id = id;
+        }
+        self.name = name;
+        self.first = first;
+        self.last = last;
+        self.email = email;
+        self.gender = gender;
+        self.password = password;
+        self.siteId = siteId;
+        self.roleId = roleId;
+    });
+
     root.GetSites = (function(token, store, args)
     {
         //if a query has not been specified, retrieve all sites

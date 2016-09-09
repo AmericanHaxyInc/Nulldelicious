@@ -335,6 +335,35 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
     //scope nui client scope through controller scope
     $scope.nui = nui;
 
+    var deleteTemplate = nui.ui.deleteTemplate;
+
+    var userStates =
+    {
+        Add: 0,
+        Save: 1
+    };
+
+    $scope.UserActionState = userStates.Add;
+    $scope.UserActionDescriptor = (function () {
+        return hx$.GetKeyByValue(userStates, $scope.UserActionState) + ' User';
+    });
+
+    $scope.UsersColumns = [{field: 'name', displayName: 'Username'},
+        {field: 'first', displayName: 'First Name'},
+        {field: 'last', displayName: 'Last Name'},
+        {field: 'email', displayName: 'Email'},
+        {field: 'gender', displayName: 'Gender'},
+        {field: 'Delete', cellTemplate: deleteTemplate}
+    ];
+        $scope.UsersData = {
+            data: $scope.Users,
+            columnDefs: $scope.RoleColumns,
+            enableRowSelection: true,
+            enableSelectAll: false,
+            selectionRowHeaderWidth: 35,
+            multiSelect: false
+        };
+
     $scope.GetUsers = (function()
     {
         $scope.DataManager.Get('User', {
@@ -342,11 +371,73 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
         }).then(function(data)
         {
             $scope.Users = data;
+            $scope.UsersData.data = data;
             $scope.$apply();
         });
     });
 
+    $scope.GetPresets = (function()
+    {
+        //TODO: refactor this as one preset call on load of application
+        $scope.DataManager.Get('Presets').then(function (data) {
+            var genders = _.map(data.enums.Gender, function(value, key)
+            {
+                return key;
+            });
+            $scope.UserGenders = genders;
+        });
+    });
+
+    $scope.UserAction = (function () {
+        //add state
+        if ($scope.UserActionState == userStates.Add) {
+            var user = new nui.User(null, $scope.Username, $scope.FirstName, $scope.LastName, $scope.Email, $scope.SelectedGender, $scope.Password, $scope.SelectedSiteId, hx$.Guid());
+            $scope.DataManager.Set('User', user).then(function (data) {
+                $scope.UsersData.data.push(data);
+                $scope.$apply();
+            });
+        }
+        //save state
+        else if ($scope.UserActionState == userStates.Save) {
+            var user = new nui.User($scope.SelectedUser.id, $scope.FirstName, $scope.LastName, $scope.Email, $scope.SelectedGender, $scope.Password, $scope.SelectedSiteId, hx$.Guid());
+            $scope.DataManager.Set('User', user).then(function (data) {
+                //on save, modify the element in the grid
+                var gridUser = hx$.single($scope.UsersData.data, function (usr) {
+                    return usr.id == $scope.SelectedUser.id;
+                });
+                gridUser = data;
+                $scope.$apply();
+            });
+        }
+
+    });
+
+    /*remove row functionality */
+    $scope.RemoveRow = function(element) {
+        var self = this;
+        var targetRow = element.$parent.$parent.row;
+        var targetId = targetRow.entity.id;
+        //now get the index of the element that we wish to remove in our collection, and
+        //delete it on the server
+        var userToDelete = hx$.single($scope.UsersData.data, function(user)
+        {
+            return user.id === targetId;
+        });
+
+        $scope.DataManager.Delete('User', userToDelete).then(function(result)
+        {
+            //now, remove the element from our grid
+            var index = $scope.UsersData.data.indexOf(userToDelete);
+            $scope.EditorData.data.splice(index, 1);
+            $scope.$apply();
+        }).fail(function(error)
+        {
+            $scope.DeleteError = true;
+        });
+    };
+
     $scope.GetUsers();
+    $scope.GetPresets();
 });
 
 var Roles = NullDelicious.controller("Roles", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location) {
@@ -396,6 +487,7 @@ var Roles = NullDelicious.controller("Roles", function ($scope, $http, $localSto
         }
     });
 
+    //TODO: refactor this as one preset call on load of application
     $scope.GetPresets = (function () {
         if ($scope.DataManager) {
             $scope.DataManager.Get('Presets').then(function (data) {

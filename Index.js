@@ -118,7 +118,8 @@ middleWare.then(function (middlewareResult) {
         var roleTypes = ['get', 'set', 'delete'];
         var response = {
             schemas: schemas,
-            roles : roleTypes
+            roles : roleTypes,
+            enums : ndschemas.Presets.Enumerations
         };
         res.status(200).send(JSON.stringify(response));
     });
