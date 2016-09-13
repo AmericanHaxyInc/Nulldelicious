@@ -357,7 +357,7 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
     ];
         $scope.UsersData = {
             data: $scope.Users,
-            columnDefs: $scope.RoleColumns,
+            columnDefs: $scope.UsersColumns,
             enableRowSelection: true,
             enableSelectAll: false,
             selectionRowHeaderWidth: 35,
@@ -428,7 +428,7 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
         {
             //now, remove the element from our grid
             var index = $scope.UsersData.data.indexOf(userToDelete);
-            $scope.EditorData.data.splice(index, 1);
+            $scope.UsersData.data.splice(index, 1);
             $scope.$apply();
         }).fail(function(error)
         {
