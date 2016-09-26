@@ -198,11 +198,9 @@ var Editor = NullDelicious.controller("Editor", function ($scope, $http, $localS
         Save: 1
     };
     //tag constructor
-    var tag = (function(text)
-    {
-        var self = this;
-        self.text = text;
-    });
+    var tag = nui.tag;
+
+
     var defaultTags = [new tag('')];
     $scope.Tags = defaultTags;
     $scope.GetPosts = (function()
@@ -295,7 +293,29 @@ var Editor = NullDelicious.controller("Editor", function ($scope, $http, $localS
 var Images = NullDelicious.controller("Images", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
 {
 
+    var imageStates =
+    {
+        Add: 0,
+        Save: 1
+    };
+
+
+    $scope.ImageActionState = imageStates.Add;
+
     $scope.nui = nui;
+
+    $scope.ImagesColumns = [{field : 'title', displayName : 'Title'},
+    ];
+
+    $scope.ImagesData = {
+        data : $scope.Images,
+        columnDefs : $scope.ImagesColumns,
+        enableRowSelection: true,
+        enableSelectAll: false,
+        selectionRowHeaderWidth: 35,
+        multiSelect: false
+    };
+
     $scope.GetImages = (function()
     {
         if($scope.DataManager)
@@ -304,12 +324,191 @@ var Images = NullDelicious.controller("Images", function ($scope, $http, $localS
                 query: {key: 'siteId', value : $scope.SelectedSiteId}
             }).then(function(data){
                 $scope.Images = data;
+                $scope.ImagesData.data = $scope.Images;
                 $scope.$apply();
             })
         }
     });
 
+    //tag constructor
+    var tag = nui.tag;
+
+    var defaultTags = [new tag('')];
+    $scope.Tags = defaultTags;
+    $scope.AddTag = (function()
+    {
+        $scope.Tags.push(new tag(''));
+    });
+
+    $scope.UploadFiles = (function(files)
+    {
+        //take the first file uploaded.
+        var uploadFile = files[0];
+
+        if($scope.ImageActionState == imageStates.Add)
+        {
+            //transform tags
+            var tags = _.map($scope.Tags, function(key)
+            {
+                return {name : key.text};
+            });
+            //right now, no galleryId to upload
+            var image = new nui.Image(null, $scope.ImageTitle, uploadFile, null, tags);
+
+            //return the result of our promise upstream to the file upload control
+            return $scope.DataManager.Set('Image', image);
+        }
+        else if ($scope.ImageActionState == imageStates.Save)
+        {
+
+        }
+
+    });
+
     $scope.GetImages();
+});
+
+/*
+Directive adapted from base upload template at :
+https://css-tricks.com/examples/DragAndDropFileUploading/?submit-on-demand
+
+we use our injected data manager to make the ajax calls within this directive
+ */
+var ndFileUpload = Images.directive('ndFileUpload', function(){
+    return{
+        scope: {
+            /* upload callback is the callback that we should use
+             our parent controller to write our file data back to the server*/
+            uploadCallback: "@uploadCallback"
+        },
+        link: function(scope, element, attributes)
+        {
+            var isAdvancedUpload = (function()
+            {
+                var div = document.createElement( 'div' );
+                return ( ( 'draggable' in div ) || ( 'ondragstart' in div && 'ondrop' in div ) ) && 'FormData' in window && 'FileReader' in window;
+            })();
+
+            //now apply the effect in this element's scope.
+
+            var form = $(element).find('form');
+            var input = form.find('input[type="file"]');
+            var label = form.find( 'label' );
+            var errorMsg = form.find( '.box-error span' );
+            var restart	= form.find( '.box-restart' );
+            var droppedFiles = false;
+
+            var showFiles	 = (function( files )
+                {
+                    label.text( files.length > 1 ? ( input.attr( 'data-multiple-caption' ) || '' ).replace( '{count}', files.length ) : files[ 0 ].name );
+                });
+
+            // letting the server side to know we are going to make an Ajax request
+            form.append( '<input type="hidden" name="ajax" value="1" />' );
+
+            // automatically submit the form on file select
+            input.on( 'change', function( e )
+            {
+                showFiles( e.target.files );
+            });
+
+
+            // drag&drop files if the feature is available
+            if( isAdvancedUpload )
+            {
+                form
+                    .addClass( 'has-advanced-upload' ) // letting the CSS part to know drag&drop is supported by the browser
+                    .on( 'drag dragstart dragend dragover dragenter dragleave drop', function( e )
+                    {
+                        // preventing the unwanted behaviours
+                        e.preventDefault();
+                        e.stopPropagation();
+                    })
+                    .on( 'dragover dragenter', function() //
+                    {
+                        form.addClass( 'is-dragover' );
+                    })
+                    .on( 'dragleave dragend drop', function()
+                    {
+                        form.removeClass( 'is-dragover' );
+                    })
+                    .on( 'drop', function( e )
+                    {
+                        droppedFiles = e.originalEvent.dataTransfer.files; // the files that were dropped
+                        showFiles( droppedFiles );
+                    });
+            }
+            // if the form was submitted
+            form.on( 'submit', function( e )
+            {
+                // preventing the duplicate submissions if the current one is in progress
+                if( form.hasClass( 'is-uploading' ) ) return false;
+
+                form.addClass( 'is-uploading' ).removeClass( 'is-error' );
+                if( isAdvancedUpload ) // ajax file upload for modern browsers
+                {
+                    e.preventDefault();
+                    // gathering the form data
+
+                    //var ajaxData = new FormData( form.get( 0 ) );
+                    var fileData = [];
+                    if( droppedFiles )
+                    {
+                        _.each( droppedFiles, function( i, file )
+                        {
+                            fileData.push(i);
+                        });
+                    }
+                    var callbackName = scope.uploadCallback;
+                    if(typeof(scope.$parent[callbackName]) !== 'function')
+                    {
+                        throw new Error('callback {0} is not a function!'.replace('{0}', callbackName));
+                    }
+                    else
+                    {
+                        scope.$parent[callbackName](fileData).then(function(result)
+                        {
+                            form.removeClass( 'is-uploading' );
+                            form.addClass('is-success');
+
+                        }).fail(function(error)
+                        {
+                            form.removeClass( 'is-uploading' );
+                            alert( 'Error. File upload failed' );
+                        })
+                    }
+                }
+                else // fallback Ajax solution upload for older browsers
+                {
+                    var iframeName	= 'uploadiframe' + new Date().getTime();
+                        var iframe		= $( '<iframe name="' + iframeName + '" style="display: none;"></iframe>' );
+
+                    $( 'body' ).append( iframe );
+                    form.attr( 'target', iframeName );
+
+                    iframe.one( 'load', function()
+                    {
+                        var data = $.parseJSON( iframe.contents().find( 'body' ).text() );
+                        form.removeClass( 'is-uploading' ).addClass( data.success == true ? 'is-success' : 'is-error' ).removeAttr( 'target' );
+                        if( !data.success ) errorMsg.text( data.error );
+                        iframe.remove();
+                    });
+                }
+            });
+            // restart the form if has a state of error/success
+            restart.on( 'click', function( e )
+            {
+                e.preventDefault();
+                form.removeClass( 'is-error is-success' );
+                input.trigger( 'click' );
+            });
+            // Firefox focus bug fix for file input
+            input
+                .on( 'focus', function(){ input.addClass( 'has-focus' ); })
+                .on( 'blur', function(){ input.removeClass( 'has-focus' ); });
+        },
+        templateUrl: '../../template/nui-file-upload.html'
+    }
 });
 var Styles = NullDelicious.controller("Styles", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
 {

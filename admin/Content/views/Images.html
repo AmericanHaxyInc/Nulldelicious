@@ -1,5 +1,22 @@
 <h2>Images</h2>
-<div ui-grid="{data: Images}">
 
-
+<!-- image grid -->
+<div ui-grid="ImagesData" ui-grid-selection>
 </div>
+<nd-file-upload id="FileUpload" uploadCallback="UploadFiles">
+
+</nd-file-upload>
+
+<!-- file upload directive -->
+<div class="page-section nui-form">
+    <div class="nui-form-group">
+        <label>Title</label> <input type="text" ng-model="ImageTitle"/>
+    </div>
+    <div class="nui-form-group">
+        <span ng-repeat="tag in Tags"><label>Tag</label><input type="text" ng-model="tag.text"/></span>
+        <button class="nui-add-button" ng-click="AddTag()"></button>
+    </div>
+</div>
+
+
+

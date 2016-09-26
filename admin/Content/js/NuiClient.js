@@ -207,6 +207,15 @@ var root = {};
 
     /* todo : refactor as method for an angular service */
 
+    /*tag constructor, used in tags directive */
+
+    root.tag = (function(text)
+    {
+        var self = this;
+        self.text = text;
+    });
+
+
     /* site*/
     /*site constructor*/
     root.Site = (function(title, description)
@@ -283,6 +292,26 @@ var root = {};
         self.password = password;
         self.siteId = siteId;
         self.roleId = roleId;
+    });
+
+    /*image constructor */
+
+    root.Image = (function(id, title, file, galleryId, tags)
+    {
+        var self = this;
+        if(!id) {
+            self.id = hx$.Guid();
+        }
+        else
+        {
+            self.id = id;
+        }
+        self.title = title;
+        /*data is base 64 encoded data from our file*/
+        self.data = file;
+        //gallery id is optional
+        self.galleryId = galleryId;
+        self.tags = tags;
     });
 
     root.GetSites = (function(token, store, args)
