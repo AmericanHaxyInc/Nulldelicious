@@ -340,29 +340,29 @@ var Images = NullDelicious.controller("Images", function ($scope, $http, $localS
         $scope.Tags.push(new tag(''));
     });
 
-    $scope.UploadFiles = (function(files)
+    $scope.UploadFiles = (function(rawData)
     {
-        //take the first file uploaded.
-        var uploadFile = files[0];
 
-        if($scope.ImageActionState == imageStates.Add)
-        {
-            //transform tags
-            var tags = _.map($scope.Tags, function(key)
+            var uploadFile = hx$.TrimTo(',', rawData);
+
+            //under image state add, we create a new image and upload it
+            if($scope.ImageActionState == imageStates.Add)
             {
-                return {name : key.text};
-            });
-            //right now, no galleryId to upload
-            var image = new nui.Image(null, $scope.ImageTitle, uploadFile, null, tags);
+                //transform tags
+                var tags = _.map($scope.Tags, function(key)
+                {
+                    return {name : key.text};
+                });
+                //right now, no galleryId to upload
+                var image = new nui.Image(null, $scope.ImageTitle, uploadFile, null, tags);
 
-            //return the result of our promise upstream to the file upload control
-            return $scope.DataManager.Set('Image', image);
-        }
-        else if ($scope.ImageActionState == imageStates.Save)
-        {
+                //return the result of our promise upstream to the file upload control
+                return $scope.DataManager.Set('Image', image);
+            }
+            else if ($scope.ImageActionState == imageStates.Save)
+            {
 
-        }
-
+            }
     });
 
     $scope.GetImages();
@@ -376,6 +376,7 @@ we use our injected data manager to make the ajax calls within this directive
  */
 var ndFileUpload = Images.directive('ndFileUpload', function(){
     return{
+        restrict : 'E',
         scope: {
             /* upload callback is the callback that we should use
              our parent controller to write our file data back to the server*/
@@ -459,23 +460,30 @@ var ndFileUpload = Images.directive('ndFileUpload', function(){
                             fileData.push(i);
                         });
                     }
-                    var callbackName = scope.uploadCallback;
-                    if(typeof(scope.$parent[callbackName]) !== 'function')
+                    var callback = scope.$parent[scope.uploadCallback];
+                    if(typeof(callback) !== 'function')
                     {
                         throw new Error('callback {0} is not a function!'.replace('{0}', callbackName));
                     }
                     else
                     {
-                        scope.$parent[callbackName](fileData).then(function(result)
-                        {
-                            form.removeClass( 'is-uploading' );
-                            form.addClass('is-success');
+                        //now read the file data using a file reader, and call our callback with this info
+                        var reader = new FileReader();
 
-                        }).fail(function(error)
-                        {
-                            form.removeClass( 'is-uploading' );
-                            alert( 'Error. File upload failed' );
-                        })
+                        reader.onload = function(e) {
+                            var rawData = reader.result;
+                            callback(rawData).then(function(result)
+                            {
+                                form.removeClass( 'is-uploading' );
+                                form.addClass('is-success');
+                            }).fail(function(error)
+                            {
+                                form.removeClass( 'is-uploading' );
+                                alert( 'Error. File upload failed' );
+                            })
+                        };
+                        //read the first uploaded file for this directive only
+                        reader.readAsDataURL(fileData[0]);
                     }
                 }
                 else // fallback Ajax solution upload for older browsers
