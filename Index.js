@@ -55,14 +55,22 @@ var cors = ndconfig.MiddleWare('cors', function() {
         }
     });
 });
+
 //middle ware for populating our request body
-app.use(bodyParser.json()); // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+var bodyParserMiddleware = ndconfig.MiddleWare('bodyParser', function(config)
+{
+    //our config object for body-parser is a direct translation of the object properties (i.e. request size, etc.) that we want to pass in
+    app.use(bodyParser.json(config)); // for parsing application/json
+    app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+});
+
+
+
 
 //now, after our middleware is mounted,
 // mount the rest of the routes and start the app
 
-var middleWare = Q.all([logger, xpoweredby, cors]);
+var middleWare = Q.all([logger, xpoweredby, cors, bodyParserMiddleware]);
 middleWare.then(function (middlewareResult) {
 
 

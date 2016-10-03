@@ -343,7 +343,7 @@ var Images = NullDelicious.controller("Images", function ($scope, $http, $localS
     $scope.UploadFiles = (function(rawData)
     {
 
-            var uploadFile = hx$.TrimTo(',', rawData);
+            var uploadFile = rawData
 
             //under image state add, we create a new image and upload it
             if($scope.ImageActionState == imageStates.Add)
