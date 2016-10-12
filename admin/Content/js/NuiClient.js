@@ -296,7 +296,7 @@ var root = {};
 
     /*image constructor */
 
-    root.Image = (function(id, title, file, galleryId, tags)
+    root.Image = (function(id, title, file, galleryId, tags, siteId)
     {
         var self = this;
         if(!id) {
@@ -312,6 +312,7 @@ var root = {};
         //gallery id is optional
         self.galleryId = galleryId;
         self.tags = tags;
+        self.siteId = siteId;
     });
 
     root.GetSites = (function(token, store, args)

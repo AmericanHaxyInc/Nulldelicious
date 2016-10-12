@@ -354,7 +354,7 @@ var Images = NullDelicious.controller("Images", function ($scope, $http, $localS
                     return {name : key.text};
                 });
                 //right now, no galleryId to upload
-                var image = new nui.Image(null, $scope.ImageTitle, uploadFile, null, tags);
+                var image = new nui.Image(null, $scope.ImageTitle, uploadFile, null, tags, $scope.SelectedSiteId);
 
                 //return the result of our promise upstream to the file upload control
                 return $scope.DataManager.Set('Image', image);
