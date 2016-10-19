@@ -304,8 +304,11 @@ var Images = NullDelicious.controller("Images", function ($scope, $http, $localS
 
     $scope.nui = nui;
 
+    var deleteTemplate = nui.ui.deleteTemplate;
+
     $scope.ImagesColumns = [{field : 'title', displayName : 'Title'},
-    ];
+        {field : 'Delete', cellTemplate: deleteTemplate},
+        {field : 'tags', displayName: 'Tags'}];
 
     $scope.ImagesData = {
         data : $scope.Images,
@@ -339,6 +342,29 @@ var Images = NullDelicious.controller("Images", function ($scope, $http, $localS
     {
         $scope.Tags.push(new tag(''));
     });
+
+    $scope.RemoveRow = function(element) {
+        var self = this;
+        var targetRow = element.$parent.$parent.row;
+        var targetId = targetRow.entity.id;
+        //now get the index of the element that we wish to remove in our collection, and
+        //delete it on the server
+        var imageToDelete = hx$.single($scope.ImagesData.data, function(image)
+        {
+            return image.id === targetId;
+        });
+
+        $scope.DataManager.Delete('Image', imageToDelete).then(function(result)
+        {
+            //now, remove the element from our grid
+            var index = $scope.ImagesData.data.indexOf(imageToDelete);
+            $scope.ImagesData.data.splice(index, 1);
+            $scope.$apply();
+        }).fail(function(error)
+        {
+            $scope.DeleteError = true;
+        });
+    };
 
     $scope.UploadFiles = (function(rawData)
     {
