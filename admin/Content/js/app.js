@@ -382,14 +382,43 @@ var Images = NullDelicious.controller("Images", function ($scope, $http, $localS
                 //right now, no galleryId to upload
                 var image = new nui.Image(null, $scope.ImageTitle, uploadFile, null, tags, $scope.SelectedSiteId);
 
+                //the downstream promise that we return is a composite of our data update and UI update for the grid data...
+                var update = Q.defer();
+
                 //return the result of our promise upstream to the file upload control
-                return $scope.DataManager.Set('Image', image);
+                $scope.DataManager.Set('Image', image).then(function(result)
+                {
+                    //update our grid with the latest data
+                    $scope.ImagesData.data.push(result);
+                    update.resolve(result);
+                    $scope.$apply();
+                }).catch(function(error)
+                {
+                    update.reject(error);
+                });
+                return update.promise;
             }
             else if ($scope.ImageActionState == imageStates.Save)
             {
 
             }
     });
+
+    //register image on action change
+    $scope.ImagesData.onRegisterApi = function(gridApi) {
+        //set gridApi on scope
+        $scope.gridApi = gridApi;
+        //post selection in grid
+        gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+            //emit a selected site change event so that we can
+            var selectedImage = row.entity;
+            $scope.SelectedImage = selectedImage;
+            $scope.ImageContent = selectedImage.data;
+
+            //switch to save state
+            $scope.ImageActionState = imageStates.Save;
+        });
+    };
 
     $scope.GetImages();
 });

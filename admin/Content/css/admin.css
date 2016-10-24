@@ -319,6 +319,12 @@ nav li:first-child {
   border-radius: 20%;
   border-color: #000000;
 }
+.nui-image-box {
+  max-width: 680px;
+  max-height: 680px;
+  width: auto;
+  height: auto;
+}
 .SearchBorder {
   border-color: #009E41;
   border-width: 3px;
