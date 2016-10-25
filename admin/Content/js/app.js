@@ -576,19 +576,125 @@ var ndFileUpload = Images.directive('ndFileUpload', function(){
 var Styles = NullDelicious.controller("Styles", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
 {
     $scope.nui = nui;
+
+    //scope nui client scope through controller scope
+    $scope.nui = nui;
+
+    //set editor columns and data
+
+    var deleteTemplate = nui.ui.deleteTemplate;
+
+    $scope.StylesColumns = [{field : 'name', displayName : 'Name'},
+        {field : 'text', displayName: 'Text'},
+        {field : 'siteId', displayName: 'SiteId'},
+        {field : 'Delete', cellTemplate: deleteTemplate}
+    ];
+
+    $scope.StylesData = {
+        data : $scope.Styles,
+        columnDefs : $scope.StylesColumns,
+        enableRowSelection: true,
+        enableSelectAll: false,
+        selectionRowHeaderWidth: 35,
+        multiSelect: false
+    };
+    /*remove row functionality */
+    $scope.RemoveRow = function(element) {
+        var self = this;
+        var targetRow = element.$parent.$parent.row;
+        var targetId = targetRow.entity.id;
+        //now get the index of the element that we wish to remove in our collection, and
+        //delete it on the server
+        var styleToDelete = hx$.single($scope.StylesData.data, function(style)
+        {
+            return style.id === targetId;
+        });
+
+        $scope.DataManager.Delete('Style', styleToDelete).then(function(result)
+        {
+            //now, remove the element from our grid
+            var index = $scope.StylesData.data.indexOf(styleToDelete);
+            $scope.StylesData.data.splice(index, 1);
+            $scope.$apply();
+        }).fail(function(error)
+        {
+            $scope.DeleteError = true;
+        });
+    };
+    //styles states >> either adding styles or editing them
+    var stylesStates =
+    {
+        Add: 0,
+        Save: 1
+    };
+
+    //default state is add
+    $scope.StyleActionState = stylesStates.Add;
+    $scope.StyleActionDescriptor = (function()
+    {
+        return hx$.GetKeyByValue(stylesStates, $scope.StyleActionState) + ' Style';
+    });
+
+    $scope.StyleAction = (function() {
+        if ($scope.StyleActionState == stylesStates.Add) {
+            var name = $scope.StyleName;
+            var text = $scope.StyleText;
+            var siteId = $scope.SelectedSiteId;
+            var style = new nui.Style(null, name, text, siteId);
+            $scope.DataManager.Set('Style', style).then(function (data) {
+                $scope.StylesData.data.push(data);
+                $scope.$apply();
+            }).catch(function(error)
+            {
+                alert(error);
+            });
+        }
+        else if ($scope.StyleActionState == stylesStates.Save) {
+            $scope.SelectedStyle.text = $scope.StyleText;
+            $scope.SelectedStyle.name = $scope.StyleName;
+
+            $scope.DataManager.Set('Style', $scope.SelectedStyle).then(function(data) {
+                var gridStyle = hx$.single($scope.StylesData.data, function(entry)
+                {
+                    return entry.id === $scope.SelectedStyle.id;
+                });
+                gridStyle = data;
+                $scope.$apply();
+            })
+        }
+
+    });
+
     $scope.GetStyles = (function()
     {
         if($scope.DataManager)
         {
-            $scope.DataManager.Get('Theme', {
+            $scope.DataManager.Get('Style', {
                 query: {key: 'siteId', value : $scope.SelectedSiteId}
             }).then(function(data)
             {
                 $scope.Styles = data;
+                $scope.StylesData.data = $scope.Styles;
                 $scope.$apply();
             });
         }
     });
+
+    $scope.StylesData.onRegisterApi = function(gridApi) {
+        //set gridApi on scope
+        $scope.gridApi = gridApi;
+        //post selection in grid
+        gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+            //emit a selected site change event so that we can
+            var selectedStyle = row.entity;
+            $scope.SelectedStyle = selectedStyle;
+            $scope.StyleName = selectedStyle.name;
+            $scope.StyleText = selectedStyle.text;
+
+            //switch to save state
+            $scope.StyleActionState = stylesStates.Save;
+        });
+    };
 
     $scope.GetStyles();
 });

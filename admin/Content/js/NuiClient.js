@@ -315,6 +315,23 @@ var root = {};
         self.siteId = siteId;
     });
 
+    /*style constructor */
+
+    root.Style = (function(id, name, text, siteId)
+    {
+        var self = this;
+        if(!id) {
+            self.id = hx$.Guid();
+        }
+        else
+        {
+            self.id = id;
+        }
+        self.name = name;
+        self.text = text;
+        self.siteId = siteId;
+    });
+
     root.GetSites = (function(token, store, args)
     {
         //if a query has not been specified, retrieve all sites
@@ -507,6 +524,55 @@ var root = {};
             store);
     });
 
+    /*styles */
+
+    root.GetStyles = (function(token, store, args)
+    {
+        if(!args || !args.query) {
+            return root.AuthorizedRequest(token,
+                {
+                    type: 'GET',
+                    url: root.BaseUri + '/style/all/retrieve'
+                },
+                store
+            );
+            //otherwise, retrieve themes that match our query
+        }
+        else
+        {
+            var route = root.BaseUri + '/style/query/{key}/{value}'.replace('{key}', args.query.key).replace('{value}', args.query.value);
+            return root.AuthorizedRequest(token,
+                {
+                    type: 'GET',
+                    url: route
+                },
+                store);
+        }
+    });
+
+    root.AddStyle = (function(token, style, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'POST',
+                url: root.BaseUri + '/style',
+                data : JSON.stringify(style)
+            },
+            store
+        );
+    });
+
+    root.DeleteStyle = (function(token, style, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'DELETE',
+                url: root.BaseUri + '/style/' + style.id
+
+            },
+            store);
+    });
+
     /*themes*/
 
     root.GetThemes = (function(token, store, args)
@@ -620,10 +686,12 @@ root.interfaces = {
     'Post' : {get : root.GetPosts, set : root.AddPost, delete : root.DeletePost, cache: false},
     'User' : {get : root.GetUsers, set : root.AddUser, delete : root.DeleteUser, cache: false},
     'Image' : {get : root.GetImages, set : root.AddImage, delete : root.DeleteImage, cache: false},
+    /*themes are our literal ui templates that compose the other elements */
     'Theme' : {get : root.GetThemes, set : root.AddTheme, delete : root.DeleteTheme, cache: false},
     'Role' : {get : root.GetRoles, set : root.AddRole, delete : root.DeleteRole, cache: false},
     /* preset schema call -> for bootstrapped data */
-    'Presets' : {get : root.GetPresetSchemas, cache: false}
+    'Presets' : {get : root.GetPresetSchemas, cache: false},
+    'Style' : {get : root.GetStyles, set : root.AddStyle, delete : root.DeleteStyle, cache: false}
 };
 return root;
 })($, Q, hx$, Base64);

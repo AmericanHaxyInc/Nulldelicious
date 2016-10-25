@@ -1,5 +1,17 @@
 <h2>Styles</h2>
-<div ui-grid="{data: Styles}">
+<div ui-grid="StylesData" ui-grid-selection>
+</div>
 
+<div class="page-section nui-form">
+    <div class="nui-form-group">
+        <label>Name</label><input type="text" id="StyleName" ng-model="StyleName"/>
+    </div>
+    <div class="nui-form-group">
+        <label>Text</label> <textarea id="StyleText" ng-model="StyleText"></textarea>
+    </div>
+    <div class="nui-form-group">
+        <!-- save / add post button -->
+        <button style="margin-left:20px;" class="nui-highlight-button nui-highlight" ng-click="StyleAction()">{{StyleActionDescriptor()}}</button>
+    </div>
 
 </div>
