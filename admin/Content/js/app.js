@@ -806,6 +806,26 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
 
     $scope.GetUsers();
     $scope.GetPresets();
+
+    //register grid API's
+    $scope.UsersData.onRegisterApi = function (gridApi) {
+        //set gridApi on scope
+        $scope.gridApi = gridApi;
+
+        gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+            //this is where we set our currently selected row in scope
+            $scope.SelectedUser = row.entity;
+            $scope.Username = $scope.SelectedUser.name;
+            $scope.FirstName = $scope.SelectedUser.first;
+            $scope.LastName = $scope.SelectedUser.last;
+            $scope.Email = $scope.SelectedUser.email;
+            $scope.SelectedGender = $scope.SelectedUser.gender;
+            $scope.Password = $scope.SelectedUser.password;
+
+            //now change our action to a save action
+            $scope.UserActionState = userStates.Save;
+        });
+    };
 });
 
 var Roles = NullDelicious.controller("Roles", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location) {
