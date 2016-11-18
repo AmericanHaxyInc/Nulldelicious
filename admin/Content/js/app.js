@@ -1,7 +1,7 @@
 //route, storage, and grid dependencies
 var NullDelicious = angular.module("Nulldelicious", ["ngRoute", "ngStorage", "ngTouch", "ui.grid", "ui.grid.selection"]);
 
-var Main = NullDelicious.controller("Main", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location) {
+var Main = NullDelicious.controller("Main", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location, DataManager) {
     //scope nui client scope through controller scope
     $scope.nui = nui;
     //define location in scope
@@ -26,7 +26,7 @@ var Main = NullDelicious.controller("Main", function ($scope, $http, $localStora
             //keep track of current identity
             $scope.Identity = result[1];
             //create data context after login
-            $scope.DataManager = new nui.DataManager($scope.$storage, result[0]);
+            $scope.DataManager = new DataManager.DataManager($scope.$storage, result[0]);
             $scope.$apply();
         })
             .fail(function (error) {
