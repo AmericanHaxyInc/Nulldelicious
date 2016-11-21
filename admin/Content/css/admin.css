@@ -5,7 +5,7 @@ nav li:first-child {
 /* end element styles*/
 /*media queries */
 /*mobile */
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 1550px) {
   .nui-nav ul {
     width: 100%;
   }
@@ -48,13 +48,15 @@ nav li:first-child {
     color: #009E41;
     border-color: #000000;
     border-radius: 2em;
+    -webkit-border-radius: 2em;
+    -moz-border-radius: 2em;
   }
   ul.nui-nav-right li label.fineprint {
     font-size: .25em;
   }
 }
 /*desktop*/
-@media screen and (min-width: 500px) {
+@media screen and (min-width: 1550px) {
   /* nav list styles*/
   .nui-nav ul li {
     cursor: pointer;
@@ -108,6 +110,8 @@ nav li:first-child {
     color: #009E41;
     border-color: #000000;
     border-radius: 2em;
+    -webkit-border-radius: 2em;
+    -moz-border-radius: 2em;
   }
   ul.nui-nav-right li label.fineprint {
     font-size: .25em;
@@ -168,7 +172,8 @@ nav li:first-child {
   color: #000000;
 }
 .nui-form label {
-  min-width: 100px;
+  display: inline-block;
+  min-width: 200px;
   color: #009E41;
   font-size: 2.5em;
   font-family: 'Jura', sans-serif;
@@ -178,9 +183,12 @@ nav li:first-child {
   color: #009E41;
   border-color: #000000;
   border-radius: 2em;
+  -webkit-border-radius: 2em;
+  -moz-border-radius: 2em;
 }
 .nui-form input {
   margin: 0 0 0 20px;
+  display: inline-block;
   padding-left: 20px;
   border-radius: 2em;
   min-width: 300px;
@@ -191,6 +199,7 @@ nav li:first-child {
 }
 .nui-form textarea {
   margin: 0 0 0 20px;
+  display: inline-block;
   padding-left: 20px;
   border-radius: 2em;
   min-width: 300px;
@@ -202,8 +211,15 @@ nav li:first-child {
 .nui-form input:focus {
   outline-width: 0;
 }
+.nui-form select {
+  margin: 0 0 0 20px;
+  width: 200px;
+  font-weight: bold;
+  font-size: 1em;
+}
 .nui-form-group {
   margin: 10px 0 10px 0;
+  display: block;
 }
 .nui-add-button {
   width: 40px;
@@ -252,14 +268,18 @@ nav li:first-child {
   color: #FFFFFF;
   border: 2px solid #000000;
 }
+.nui-contrast-highlight-button {
+  /*contrast style of highlight buttonf*/
+  background-color: #000000;
+  color: #FFFFFF;
+  border: 2px solid #000000;
+}
 .nui-highlight-button {
   color: #009E41;
   background-color: #000000;
   border: 2px solid #000000;
 }
 .nui-highlight {
-  background-color: #009E41;
-  color: #FFFFFF;
   border: 2px solid #000000;
   margin: 5px 0 0 5px;
   cursor: pointer;
@@ -273,8 +293,9 @@ nav li:first-child {
   vertical-align: middle;
 }
 .nui-highlight:hover {
-  color: #009E41;
+  /*contrast style of highlight buttonf*/
   background-color: #000000;
+  color: #FFFFFF;
   border: 2px solid #000000;
 }
 /*end highlight button effects*/

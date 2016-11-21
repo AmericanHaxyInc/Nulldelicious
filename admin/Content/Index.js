@@ -11,6 +11,7 @@ app.use('/admin', express.static('views'));
 app.use('/js', express.static('js'));
 app.use('/css', express.static('css'));
 app.use('/img', express.static('img'));
+app.use('/fonts', express.static('fonts'));
 /*angular directive templates */
 app.use('/template', express.static('template'));
 app.use('/lib', express.static('../../lib'));

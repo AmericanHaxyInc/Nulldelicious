@@ -8,9 +8,10 @@
 @bodyfont: 'Jura', sans-serif;
 @gridblock: 50px;
 @block : 5px;
-@mobilewidth : 500px;
+@mobilewidth : 1550px;
 
 @bodysize : 2.5em;
+@intermediatesize : 1.0em;
 @finesize : .5em;
 
 
@@ -221,7 +222,8 @@ nav li:first-child
 
 .nui-form label
 {
-  min-width: 100px;
+  display:inline-block;
+  min-width: @gridblock * 4;
   color: @primaryinvert;
   font-size: @bodysize;
   font-family: @bodyfont;
@@ -233,11 +235,14 @@ nav li:first-child
   color: @primaryinvert;
   border-color: @oblack;
   border-radius: 2em;
+  -webkit-border-radius: 2em;
+  -moz-border-radius: 2em;
 }
 
 .nui-form input
 {
   .nui-form-spacing;
+  display:inline-block;
   padding-left: @block * 4;
   border-radius: 2em;
   min-width: 300px;
@@ -250,9 +255,10 @@ nav li:first-child
 .nui-form textarea
 {
   .nui-form-spacing;
+  display:inline-block;
   padding-left: @block * 4;
   border-radius: 2em;
-  min-width: 300px;
+  min-width: @gridblock * 6;
   color:@primaryinvert;
   border-color: @oblack;
   font-size: @bodysize;
@@ -263,11 +269,22 @@ nav li:first-child
 outline-width:0;
 }
 
+.nui-form select
+{
+  .nui-form-spacing;
+  width: @gridblock * 4;
+  font-weight: bold;
+  font-size: @intermediatesize;
+}
+
 
 .nui-form-group
 {
   margin:10px 0 10px 0;
+  display: block;
 }
+
+
 
 .nui-add-button
 {
@@ -337,6 +354,13 @@ outline-width:0;
   color: @owhite;
   border: 2px solid @oblack;
 }
+.nui-contrast-highlight-button
+{
+  /*contrast style of highlight buttonf*/
+  background-color: @oblack;
+  color: @owhite;
+  border: 2px solid @oblack;
+}
 
   .nui-highlight-button
   {
@@ -347,8 +371,7 @@ outline-width:0;
 
 .nui-highlight
 {
-  .nui-off-highlight-button;
-
+  border: 2px solid @oblack;
   margin: @block 0 0 @block;
   cursor: pointer;
   padding: @block;
@@ -364,10 +387,15 @@ outline-width:0;
 
 .nui-highlight:hover
 {
-  .nui-highlight-button;
+  .nui-contrast-highlight-button;
 }
 
 /*end highlight button effects*/
+
+
+/*check box styles*/
+
+
 
 
 
