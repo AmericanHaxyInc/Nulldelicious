@@ -10,15 +10,15 @@
         <input id="RoleName" type="text" ng-model="RoleName"/>
     </div>
 
-    <div class="nui-form-group">
+     <div class="nui-form-group">
         <label for="SiteScopedCheck">Site Scoped Role</label>
-        <input id="SiteScopedCheck" type="checkbox" ng-model="SiteScopedRole"/>
+         <input id="SiteScopedCheck" type="checkbox" ng-model="SiteScopedRole" name="check" class="nui-check"/>
     </div>
 
-    <div class="nui-form-group">
-        <label for="UserScopedCheck">User Scoped Role</label>
-        <input id="UserScopedCheck" type="checkbox" ng-model="UserScopedRole"/>
-    </div>
+   <div class="nui-form-group">
+       <label for="UserScopedCheck">User Scoped Role</label>
+       <input id="UserScopedCheck" type="checkbox" ng-model="UserScopedRole" name="check" class="nui-check"/>
+   </div>
 
     <table id="RoleTable">
         <tr ng-repeat="schema in roleDefinitions.schemas">

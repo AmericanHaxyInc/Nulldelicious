@@ -396,7 +396,23 @@ outline-width:0;
 /*check box styles*/
 
 
+/* .nui-check rounded checkbox with gradient */
+.nui-check {
+  width: @block * 6;
+  height: @block * 6;
+  position: relative;
+  margin: @block * 4 auto;
+  background: #fcfff4;
+  background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+  border-radius: @block * 10;
 
+  input[type=checkbox] {
+    visibility: hidden;
+    &:checked {
+      opacity: 1;
+    }
+  }
+}
 
 
 /* end nui styles*/
@@ -594,14 +610,9 @@ font-family: 'Homenaje', sans-serif;
 .main-text
 
 {
-
   font-family: @bodyfont;
-
   color: @oblack;
-
   font-size: 1.5em;
-
-
 
 }
 
