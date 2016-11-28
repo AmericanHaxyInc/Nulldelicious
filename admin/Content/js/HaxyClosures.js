@@ -1,14 +1,5 @@
 
     //module dependencies... Either load them with require or assume they are in global scope
-    var q = (function(){
-        if(typeof require != 'undefined') {
-            return require('q');
-        }
-        else
-        {
-            return q;
-        }
-    })();
     var _ = (function(){
         if(typeof require != 'undefined') {
             return require('underscore');
@@ -20,7 +11,7 @@
     })();
 
     //root module scope
-    (function (q, _) {
+    (function (_) {
         var global = this;
         //Haxy.Closures library. Data structures, common functionality, and language extensions.
         //Written by David Dworetzky.
@@ -230,6 +221,9 @@
             }
             return values;
         });
+
+        root.Select = root.select;
+
         //array intersection and exclusion
         root.intersect = (function(a1, a2)
         {
@@ -273,7 +267,6 @@
             }
             return undefined;
         });
-
         //aliasing
         root.Single = root.single;
         root.removeFirst = (function (array, comparison) {
@@ -292,7 +285,7 @@
 
         root.enumToArray = (function (enm)
         {
-            var vals = []
+            var vals = [];
             for(var val in enm)
             {
                 vals.push(val)
@@ -335,13 +328,13 @@
         root.SingleOrDefault = root.singleOrDefault;
 
 
-        root.TrimTo = (function(character, string)
+        root.trimTo = (function(character, string)
         {
             var index = string.indexOf(character);
             return string.substring(index + 1, string.length);
         });
-
-
+        //aliasing
+        root.TrimTo = root.trimTo;
 
         //simple key value pair
         root.KeyValue = (function(key, value)
@@ -417,9 +410,9 @@
         }
         //if we are using an amd loader...
         if (typeof define === 'function' && define.amd) {
-            define('hx$', ['q','underscore'], function() {
+            define('hx$', ['underscore'], function() {
                 return root;
             });
         }
         return root;
-    }(q, _));
+    }(_));

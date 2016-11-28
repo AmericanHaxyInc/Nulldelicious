@@ -6,7 +6,7 @@ var http = require('http');
 var https = require('https');
 var ndconfig = require('./lib/config/NdConfig.js');
 var Q = require('q');
-var hx$ = require('./lib/HaxyClosures.js');
+var hx$ = require('haxyclosures');
 
 var bodyParser = require('body-parser');
 var multer = require('multer'); // v1.0.5
