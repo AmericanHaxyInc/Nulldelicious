@@ -756,10 +756,19 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
         });
     });
 
+    $scope.GetRoles = (function()
+    {
+        $scope.DataManager.Get('Role', {query: {key: 'siteId', value : $scope.SelectedSiteId}}).then(function(data)
+        {
+            $scope.UserRoles = data;
+            $scope.$apply();
+        });
+    });
+
     $scope.UserAction = (function () {
         //add state
         if ($scope.UserActionState == userStates.Add) {
-            var user = new nui.User(null, $scope.Username, $scope.FirstName, $scope.LastName, $scope.Email, $scope.SelectedGender, $scope.Password, $scope.SelectedSiteId, hx$.Guid());
+            var user = new nui.User(null, $scope.Username, $scope.FirstName, $scope.LastName, $scope.Email, $scope.SelectedGender, $scope.Password, $scope.SelectedSiteId, $scope.SelectedRole.id);
             $scope.DataManager.Set('User', user).then(function (data) {
                 $scope.UsersData.data.push(data);
                 $scope.$apply();
@@ -767,7 +776,7 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
         }
         //save state
         else if ($scope.UserActionState == userStates.Save) {
-            var user = new nui.User($scope.SelectedUser.id, $scope.FirstName, $scope.LastName, $scope.Email, $scope.SelectedGender, $scope.Password, $scope.SelectedSiteId, hx$.Guid());
+            var user = new nui.User($scope.SelectedUser.id, $scope.Username, $scope.FirstName, $scope.LastName, $scope.Email, $scope.SelectedGender, $scope.Password, $scope.SelectedSiteId, $scope.SelectedRole.id);
             $scope.DataManager.Set('User', user).then(function (data) {
                 //on save, modify the element in the grid
                 var gridUser = hx$.single($scope.UsersData.data, function (usr) {
@@ -806,6 +815,7 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
 
     $scope.GetUsers();
     $scope.GetPresets();
+    $scope.GetRoles();
 
     //register grid API's
     $scope.UsersData.onRegisterApi = function (gridApi) {
@@ -821,6 +831,7 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
             $scope.Email = $scope.SelectedUser.email;
             $scope.SelectedGender = $scope.SelectedUser.gender;
             $scope.Password = $scope.SelectedUser.password;
+            $scope.SelectedRole = $scope.SelectedUser.role_name;
 
             //now change our action to a save action
             $scope.UserActionState = userStates.Save;
