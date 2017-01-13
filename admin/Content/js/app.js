@@ -1,3 +1,22 @@
+//set global options
+//toastr options
+toastr.options = {
+    "closeButton": false,
+    "debug": false,
+    "newestOnTop": false,
+    "progressBar": false,
+    "positionClass": "toast-top-full-width",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "1000",
+    "timeOut": "5000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+}
 //route, storage, and grid dependencies
 var NullDelicious = angular.module("Nulldelicious", ["ngRoute", "ngStorage", "ngTouch", "ui.grid", "ui.grid.selection"]);
 
@@ -31,6 +50,7 @@ var Main = NullDelicious.controller("Main", function ($scope, $http, $localStora
         })
             .fail(function (error) {
                 //display auth error to user.
+                toastr["error"](error);
                 $scope.AuthError = true;
                 $scope.$apply();
             });
@@ -106,6 +126,8 @@ var Site = NullDelicious.controller("Site", function ($scope, $http, $localStora
         }).fail(function(error)
         {
             $scope.DeleteError = true;
+            toastr["error"](error);
+            $scope.$apply();
         });
     };
 
@@ -123,6 +145,8 @@ var Site = NullDelicious.controller("Site", function ($scope, $http, $localStora
         {
             //if write fails, set our error and show an error modal
             $scope.ApiError = error;
+            toastr["error"](error);
+            $scope.$apply();
         });
     });
 
@@ -189,6 +213,8 @@ var Editor = NullDelicious.controller("Editor", function ($scope, $http, $localS
         }).fail(function(error)
         {
             $scope.DeleteError = true;
+            toastr["error"](error);
+            $scope.$apply();
         });
     };
     //post states >> either adding posts or editing them
@@ -363,6 +389,8 @@ var Images = NullDelicious.controller("Images", function ($scope, $http, $localS
         }).fail(function(error)
         {
             $scope.DeleteError = true;
+            toastr["error"](error);
+            $scope.$apply();
         });
     };
 
@@ -619,6 +647,8 @@ var Styles = NullDelicious.controller("Styles", function ($scope, $http, $localS
         }).fail(function(error)
         {
             $scope.DeleteError = true;
+            toastr["error"](error);
+            $scope.$apply();
         });
     };
     //styles states >> either adding styles or editing them
@@ -810,6 +840,8 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
         }).fail(function(error)
         {
             $scope.DeleteError = true;
+            toastr["error"](error);
+            $scope.$apply();
         });
     };
 
@@ -983,6 +1015,8 @@ var Roles = NullDelicious.controller("Roles", function ($scope, $http, $localSto
             $scope.$apply();
         }).fail(function (error) {
             $scope.DeleteError = true;
+            toastr["error"](error);
+            $scope.$apply();
         });
     };
 
