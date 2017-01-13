@@ -831,7 +831,10 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
             $scope.Email = $scope.SelectedUser.email;
             $scope.SelectedGender = $scope.SelectedUser.gender;
             $scope.Password = $scope.SelectedUser.password;
-            $scope.SelectedRole = $scope.SelectedUser.role_name;
+            $scope.SelectedRole = hx$.single($scope.UserRoles, function(data)
+            {
+                return data.id === $scope.SelectedUser.roleId;
+            });
 
             //now change our action to a save action
             $scope.UserActionState = userStates.Save;
