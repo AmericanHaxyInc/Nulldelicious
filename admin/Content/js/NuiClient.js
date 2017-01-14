@@ -151,7 +151,7 @@ var root = {};
 
     /*role */
     /* role constructor */
-    root.Role = (function(name, siteScoped, userScoped, access, siteId, id)
+    root.Role = (function(name, userScoped, siteScoped, access, siteId, id)
     {
         var self = this;
         if(!id) {
