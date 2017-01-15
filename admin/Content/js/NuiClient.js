@@ -162,8 +162,8 @@ var root = {};
             self.id = id;
         }
         self.name = name;
-        self.siteScoped = siteScoped;
-        self.userScoped = userScoped;
+        self.siteScoped = siteScoped ? siteScoped : false;
+        self.userScoped = userScoped ? userScoped : false;
 
         //convert access arrays to schema format that the server expects
         var convertedAccess = _.map(access, function(object)
