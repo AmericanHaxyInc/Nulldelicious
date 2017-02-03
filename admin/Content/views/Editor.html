@@ -4,13 +4,16 @@
 
 <div class="page-section nui-form">
     <div class="nui-form-group">
-        <label for="PostTitle">Post Title</label><input id="PostTitle" type="text" ng-model="PostTitle"/>
+        <label for="PostTitle">Post Title</label>
+        <input id="PostTitle" type="text" ng-model="PostTitle"/>
     </div>
     <div class="nui-form-group">
-        <label for="PostBody">Post Body</label><textarea id="PostBody" ng-model="PostBody"></textarea>
+        <label>Post Body</label>
+        <textarea ui-tinymce="tinymceOptions" ng-model="PostBody"></textarea>
     </div>
     <div class="nui-form-group">
-        <span ng-repeat="tag in Tags"><label>Tag</label><input type="text" ng-model="tag.text"/></span>
+        <span ng-repeat="tag in Tags"><label>Tag</label>
+        <input type="text" ng-model="tag.text"/></span>
         <button class="nui-add-button" ng-click="AddTag()"></button>
     </div>
     <div class="nui-form-group">

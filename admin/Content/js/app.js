@@ -1,5 +1,7 @@
 //set global options
 //toastr options
+
+/*global options for plugins and directives */
 toastr.options = {
     "closeButton": false,
     "debug": false,
@@ -16,11 +18,52 @@ toastr.options = {
     "hideEasing": "linear",
     "showMethod": "fadeIn",
     "hideMethod": "fadeOut"
-}
+};
+var tinymcePlugins = [
+    'advlist autolink lists link image charmap print preview anchor',
+    'searchreplace visualblocks code fullscreen',
+    'insertdatetime media table contextmenu paste code'
+];
+var tinymceToolbar = 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image code';
+
+var tinymceOptions =
+{
+    height:500,
+    menubar: false,
+    plugins: tinymcePlugins,
+    toolbar: tinymceToolbar
+};
+
 //route, storage, and grid dependencies
-var NullDelicious = angular.module("Nulldelicious", ["ngRoute", "ngStorage", "ngTouch", "ui.grid", "ui.grid.selection"]);
+var NullDelicious = angular.module("Nulldelicious", ["ngRoute", "ngStorage", "ngTouch", "ui.grid", "ui.grid.selection", "ui.tinymce"]);
+
+var ndTextEditor = NullDelicious.directive('ndTextEditor', function() {
+    return {
+        restrict: 'A',
+        scope: {
+            /*text param are the list of directive parameters we pass for tinyMCE initialization */
+            textParam: "@selector"
+        },
+        link: function (scope, element, attributes) {
+            //get id
+            var id = attributes['id'];
+            //var id = element.attr('id');
+            var selectorName = "#{0}".replace("{0}", id);
+            //init tinymce on our dom element
+            tinymce.init({ selector : selectorName,
+                height:500,
+                menubar: false,
+                plugins: tinymcePlugins,
+                toolbar: tinymceToolbar
+            });
+            //tinymce settings
+        }
+    };
+});
 
 var Main = NullDelicious.controller("Main", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location, DataManager) {
+    //tinymce editor options for our sub controllers
+    $scope.tinymceOptions = tinymceOptions;
     //scope nui client scope through controller scope
     $scope.nui = nui;
     //define location in scope
@@ -315,6 +358,10 @@ var Editor = NullDelicious.controller("Editor", function ($scope, $http, $localS
             $scope.PostActionState = postStates.Save;
         });
     };
+
+    //enable TINY MCE on editor area.
+    //tinymce.init({ selector : '#PostBody' });
+    //TODO. refactor this as a directive instead
 });
 var Images = NullDelicious.controller("Images", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
 {

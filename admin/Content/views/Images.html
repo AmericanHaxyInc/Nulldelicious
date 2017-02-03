@@ -16,7 +16,8 @@
         <label>Title</label> <input type="text" ng-model="ImageTitle"/>
     </div>
     <div class="nui-form-group">
-        <span ng-repeat="tag in Tags"><label>Tag</label><input type="text" ng-model="tag.text"/></span>
+        <span ng-repeat="tag in Tags"><label>Tag</label>
+        <input type="text" ng-model="tag.text"/></span>
         <button class="nui-add-button" ng-click="AddTag()"></button>
     </div>
 </div>
