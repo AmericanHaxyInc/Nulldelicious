@@ -1,6 +1,5 @@
 //set global options
 //toastr options
-
 /*global options for plugins and directives */
 toastr.options = {
     "closeButton": false,
@@ -39,6 +38,7 @@ var NullDelicious = angular.module("Nulldelicious", ["ngRoute", "ngStorage", "ng
 
 var ndTextEditor = NullDelicious.directive('ndTextEditor', function() {
     return {
+        //restricted to attributes only
         restrict: 'A',
         scope: {
             /*text param are the list of directive parameters we pass for tinyMCE initialization */
@@ -57,6 +57,27 @@ var ndTextEditor = NullDelicious.directive('ndTextEditor', function() {
                 toolbar: tinymceToolbar
             });
             //tinymce settings
+        }
+    };
+});
+
+var ndCodeEditor = NullDelicious.directive('ndCodeEditor', function() {
+    return {
+        restrict: 'A',
+        scope: {
+            /*code editor mode is the codemirror mode that we wish to use to edit this element*/
+            codeEditorMode: "@selector"
+        },
+        link: function (scope, element, attributes) {
+            //get id
+            var id = attributes['id'];
+            var domElement = document.getElementById(id);
+            CodeMirror.fromTextArea(domElement, {
+                value: "",
+                mode:  scope.codeEditorMode,
+                theme: "base16-dark"
+                //htmlMode: true
+            });
         }
     };
 });
