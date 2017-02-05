@@ -66,7 +66,7 @@ var ndCodeEditor = NullDelicious.directive('ndCodeEditor', function() {
         restrict: 'A',
         scope: {
             /*code editor mode is the codemirror mode that we wish to use to edit this element*/
-            codeEditorMode: "@selector"
+            mode: "@ndCodeEditor"
         },
         link: function (scope, element, attributes) {
             //get id
@@ -74,7 +74,7 @@ var ndCodeEditor = NullDelicious.directive('ndCodeEditor', function() {
             var domElement = document.getElementById(id);
             CodeMirror.fromTextArea(domElement, {
                 value: "",
-                mode:  scope.codeEditorMode,
+                mode:  scope.mode,
                 theme: "base16-dark"
                 //htmlMode: true
             });
