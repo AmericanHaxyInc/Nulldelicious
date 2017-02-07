@@ -64,20 +64,33 @@ var ndTextEditor = NullDelicious.directive('ndTextEditor', function() {
 var ndCodeEditor = NullDelicious.directive('ndCodeEditor', function() {
     return {
         restrict: 'A',
+        require: ['ngModel'],
         scope: {
             /*code editor mode is the codemirror mode that we wish to use to edit this element*/
-            mode: "@ndCodeEditor"
+            mode: "@ndCodeEditor",
+            /* make ng model available for use*/
+            ngModel: '='
         },
-        link: function (scope, element, attributes) {
+        link: function (scope, element, attributes, ctrls) {
             //get id
             var id = attributes['id'];
             var domElement = document.getElementById(id);
-            CodeMirror.fromTextArea(domElement, {
+            var cm = CodeMirror.fromTextArea(domElement, {
                 value: "",
                 mode:  scope.mode,
                 theme: "base16-dark"
                 //htmlMode: true
             });
+            //register control change
+            cm.on('change', function(obj)
+            {
+                var ngModelCtrl = ctrls[0];
+                var newValue = cm.getValue();
+                ngModelCtrl.$setViewValue(newValue);
+                //register value as scope
+                scope.ngModel = newValue;
+            });
+
         }
     };
 });
