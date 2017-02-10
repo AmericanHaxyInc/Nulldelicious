@@ -682,11 +682,129 @@ var ndFileUpload = Images.directive('ndFileUpload', function(){
         templateUrl: '../../template/nui-file-upload.html'
     }
 });
-var Styles = NullDelicious.controller("Styles", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
+var Scripts = NullDelicious.controller("Scripts", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
 {
     $scope.nui = nui;
 
-    //scope nui client scope through controller scope
+    var deleteTemplate = nui.ui.deleteTemplate;
+
+    $scope.ScriptsColumns = [{field : 'name', displayName : 'Name'},
+        {field : 'text', displayName: 'Text'},
+        {field : 'siteId', displayName: 'SiteId'},
+        {field : 'Delete', cellTemplate: deleteTemplate}
+    ];
+
+    $scope.ScriptsData = {
+        data : $scope.Scripts,
+        columnDefs : $scope.ScriptsColumns,
+        enableRowSelection: true,
+        enableSelectAll: false,
+        selectionRowHeaderWidth: 35,
+        multiSelect: false
+    };
+    /*remove row functionality */
+    $scope.RemoveRow = function(element) {
+        var self = this;
+        var targetRow = element.$parent.$parent.row;
+        var targetId = targetRow.entity.id;
+        //now get the index of the element that we wish to remove in our collection, and
+        //delete it on the server
+        var scriptToDelete = hx$.single($scope.ScriptsData.data, function(script)
+        {
+            return script.id === targetId;
+        });
+
+        $scope.DataManager.Delete('Script', scriptToDelete).then(function(result)
+        {
+            //now, remove the element from our grid
+            var index = $scope.ScriptsData.data.indexOf(scriptToDelete);
+            $scope.ScriptsData.data.splice(index, 1);
+            $scope.$apply();
+        }).fail(function(error)
+        {
+            $scope.DeleteError = true;
+            toastr["error"](error);
+            $scope.$apply();
+        });
+    };
+    //styles states >> either adding styles or editing them
+    var scriptsStates =
+    {
+        Add: 0,
+        Save: 1
+    };
+
+    //default state is add
+    $scope.ScriptActionState = scriptsStates.Add;
+    $scope.ScriptActionDescriptor = (function()
+    {
+        return hx$.GetKeyByValue(scriptsStates, $scope.ScriptActionState) + ' Script';
+    });
+
+    $scope.ScriptAction = (function() {
+        if ($scope.ScriptActionState == scriptsStates.Add) {
+            var name = $scope.ScriptName;
+            var text = $scope.ScriptText;
+            var siteId = $scope.SelectedSiteId;
+            var script = new nui.Style(null, name, text, siteId);
+            $scope.DataManager.Set('Script', script).then(function (data) {
+                $scope.ScriptsData.data.push(data);
+                $scope.$apply();
+            }).catch(function(error)
+            {
+                alert(error);
+            });
+        }
+        else if ($scope.ScriptActionState == scriptsStates.Save) {
+            $scope.SelectedScript.text = $scope.ScriptText;
+            $scope.SelectedScript.name = $scope.ScriptName;
+
+            $scope.DataManager.Set('Script', $scope.SelectedScript).then(function(data) {
+                var gridScript = hx$.single($scope.ScriptsData.data, function(entry)
+                {
+                    return entry.id === $scope.SelectedScript.id;
+                });
+                gridScript = data;
+                $scope.$apply();
+            })
+        }
+    });
+
+    $scope.GetScripts = (function()
+    {
+        if($scope.DataManager)
+        {
+            $scope.DataManager.Get('Script', {
+                query: {key: 'siteId', value : $scope.SelectedSiteId}
+            }).then(function(data)
+            {
+                $scope.Scripts = data;
+                $scope.ScriptsData.data = $scope.Scripts;
+                $scope.$apply();
+            });
+        }
+    });
+
+    $scope.ScriptsData.onRegisterApi = function(gridApi) {
+        //set gridApi on scope
+        $scope.gridApi = gridApi;
+        //post selection in grid
+        gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+            //emit a selected site change event so that we can
+            var selectedScript = row.entity;
+            $scope.SelectedScript = selectedScript;
+            $scope.ScriptName = selectedScript.name;
+            $scope.ScriptText = selectedScript.text;
+
+            //switch to save state
+            $scope.ScriptActionState = scriptsStates.Save;
+        });
+    };
+    $scope.GetScripts();
+});
+
+var Styles = NullDelicious.controller("Styles", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location)
+{
     $scope.nui = nui;
 
     //set editor columns and data
@@ -1144,4 +1262,5 @@ NullDelicious.config(['$routeProvider',
             .when('/Styles',{templateUrl: 'Styles.html', controller: "Styles"})
             .when('/Images',{templateUrl: 'Images.html', controller: "Images"})
             .when('/Roles', {templateUrl: 'Roles.html', controller: "Roles"})
+            .when('/Scripts', {templateUrl: 'Scripts.html', controller: "Scripts"})
     }]);

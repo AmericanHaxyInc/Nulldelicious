@@ -240,6 +240,23 @@ var root = {};
         self.siteId = siteId;
     });
 
+    /*script constructor */
+
+    root.Script = (function(id, name, text, siteId)
+    {
+        var self = this;
+        if(!id) {
+            self.id = hx$.Guid();
+        }
+        else
+        {
+            self.id = id;
+        }
+        self.name = name;
+        self.text = text;
+        self.siteId = siteId;
+    });
+
     root.GetSites = (function(token, store, args)
     {
         //if a query has not been specified, retrieve all sites
@@ -481,6 +498,55 @@ var root = {};
             store);
     });
 
+    /*scripts*/
+    root.GetScripts = (function(token, store, args)
+    {
+        if(!args || !args.query) {
+            return root.AuthorizedRequest(token,
+                {
+                    type: 'GET',
+                    url: root.BaseUri + '/script/all/retrieve'
+                },
+                store
+            );
+            //otherwise, retrieve scripts that match our query
+        }
+        else
+        {
+            var route = root.BaseUri + '/script/query/{key}/{value}'.replace('{key}', args.query.key).replace('{value}', args.query.value);
+            return root.AuthorizedRequest(token,
+                {
+                    type: 'GET',
+                    url: route
+                },
+                store);
+        }
+    });
+
+    root.AddScript = (function(token, script, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'POST',
+                url: root.BaseUri + '/script',
+                data : JSON.stringify(script)
+            },
+            store
+        );
+    });
+
+    root.DeleteScript = (function(token, script, store)
+    {
+        return root.AuthorizedRequest(token,
+            {
+                type: 'DELETE',
+                url: root.BaseUri + '/script/' + script.id
+
+            },
+            store);
+    });
+
+
     /*themes*/
 
     root.GetThemes = (function(token, store, args)
@@ -599,7 +665,9 @@ root.interfaces = {
     'Role' : {get : root.GetRoles, set : root.AddRole, delete : root.DeleteRole, cache: false},
     /* preset schema call -> for bootstrapped data */
     'Presets' : {get : root.GetPresetSchemas, cache: false},
-    'Style' : {get : root.GetStyles, set : root.AddStyle, delete : root.DeleteStyle, cache: false}
+    'Style' : {get : root.GetStyles, set : root.AddStyle, delete : root.DeleteStyle, cache: false},
+    /*script snippets */
+    'Script' : {get : root.GetScripts, set : root.AddScript, delete : root.DeleteScript, cache: false}
 };
 return root;
 })($, Q, hx$, Base64);

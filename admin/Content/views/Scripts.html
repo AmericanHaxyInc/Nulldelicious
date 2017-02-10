@@ -1,0 +1,19 @@
+<h2>Scripts</h2>
+<div ui-grid="ScriptsData" ui-grid-selection>
+</div>
+
+<div class="page-section nui-form">
+    <div class="nui-form-group">
+        <label>Name</label>
+        <input type="text" id="ScriptName" ng-model="ScriptName"/>
+    </div>
+    <div class="nui-form-group">
+        <label>Text</label>
+        <textarea id="ScriptText" data-nd-code-editor="javascript" ng-model="ScriptText"></textarea>
+    </div>
+    <div class="nui-form-group">
+        <!-- save / add post button -->
+        <button style="margin-left:20px;" class="nui-highlight-button nui-highlight" ng-click="ScriptAction()">{{ScriptActionDescriptor()}}</button>
+    </div>
+
+</div>
