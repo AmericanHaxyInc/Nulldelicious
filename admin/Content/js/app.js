@@ -81,15 +81,26 @@ var ndCodeEditor = NullDelicious.directive('ndCodeEditor', function() {
                 theme: "base16-dark"
                 //htmlMode: true
             });
+
+            var ngModelCtrl = ctrls[0];
             //register control change
             cm.on('change', function(obj)
             {
-                var ngModelCtrl = ctrls[0];
                 var newValue = cm.getValue();
                 ngModelCtrl.$setViewValue(newValue);
                 //register value as scope
                 scope.ngModel = newValue;
             });
+
+            //watch broadcast event for code changed in the control (outside to inside data binding)
+            scope.$on('codeChanged', function(event, value)
+            {
+                var oldValue = cm.getValue();
+                //now set our value if this is an external grid update (which means the values won't be the same)
+                if(oldValue !== value) {
+                    cm.getDoc().setValue(value);
+                }
+            })
 
         }
     };
@@ -800,6 +811,14 @@ var Scripts = NullDelicious.controller("Scripts", function ($scope, $http, $loca
             $scope.ScriptActionState = scriptsStates.Save;
         });
     };
+
+    /*scope watches*/
+
+    /*scope watches */
+    $scope.$watch('ScriptText', function(newValue, oldValue)
+    {
+        $scope.$broadcast('codeChanged', newValue);
+    });
     $scope.GetScripts();
 });
 
@@ -924,6 +943,12 @@ var Styles = NullDelicious.controller("Styles", function ($scope, $http, $localS
             $scope.StyleActionState = stylesStates.Save;
         });
     };
+
+    /*scope watches */
+    $scope.$watch('StyleText', function(newValue, oldValue)
+    {
+        $scope.$broadcast('codeChanged', newValue);
+    });
 
     $scope.GetStyles();
 });
