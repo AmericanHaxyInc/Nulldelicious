@@ -221,6 +221,15 @@ nav li:first-child {
   margin: 10px 0 10px 0;
   display: block;
 }
+.nui-code-mirror {
+  margin-left: 10px;
+}
+.nui-form-group textarea {
+  margin-left: 10px;
+}
+.nui-form-group .CodeMirror-Scroll {
+  margin-left: 10px;
+}
 .nui-add-button {
   width: 40px;
   height: 40px;
