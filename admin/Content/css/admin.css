@@ -221,6 +221,9 @@ nav li:first-child {
   margin: 10px 0 10px 0;
   display: block;
 }
+.nui-form-group .mce-tinymce {
+  margin: 20px 0 20px 20px;
+}
 .nui-code-mirror {
   margin-left: 20px;
 }
@@ -241,6 +244,7 @@ nav li:first-child {
   background: url("../img/Add.png") no-repeat;
   background-size: contain;
   cursor: pointer;
+  margin-left: 20px;
 }
 .nui-site-icon {
   width: 80px;

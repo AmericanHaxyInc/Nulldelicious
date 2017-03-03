@@ -12,14 +12,18 @@
     <div class="nui-form-group">
         <label>Preview</label><img ng-src="{{ImageContent}}" class="nui-image-box"/>
     </div>
-    <div class="nui-form-group">
-        <label>Title</label> <input type="text" ng-model="ImageTitle"/>
+
+    <div id="imageForm">
+        <div class="nui-form-group">
+            <label>Title</label> <input type="text" ng-model="ImageTitle"/>
+        </div>
+        <div class="nui-form-group">
+            <span ng-repeat="tag in Tags"><label>Tag</label>
+            <input type="text" ng-model="tag.text"/></span>
+            <button class="nui-add-button" ng-click="AddTag()"></button>
+        </div>
     </div>
-    <div class="nui-form-group">
-        <span ng-repeat="tag in Tags"><label>Tag</label>
-        <input type="text" ng-model="tag.text"/></span>
-        <button class="nui-add-button" ng-click="AddTag()"></button>
-    </div>
+
 </div>
 
 
