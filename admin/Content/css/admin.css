@@ -222,13 +222,16 @@ nav li:first-child {
   display: block;
 }
 .nui-code-mirror {
-  margin-left: 10px;
+  margin-left: 20px;
 }
 .nui-form-group textarea {
-  margin-left: 10px;
+  margin-left: 20px;
 }
 .nui-form-group .CodeMirror-Scroll {
-  margin-left: 10px;
+  margin-left: 20px;
+}
+.nui-form-group .CodeMirror {
+  margin-left: 20px;
 }
 .nui-add-button {
   width: 40px;
