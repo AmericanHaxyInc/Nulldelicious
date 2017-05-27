@@ -1,0 +1,19 @@
+<h2>Template</h2>
+<div ui-grid="TemplateData" ui-grid-selection>
+</div>
+
+<div class="page-section nui-form">
+    <div class="nui-form-group">
+        <label>Name</label>
+        <input type="text" id="TemplateName" ng-model="TemplateName"/>
+    </div>
+    <div class="nui-form-group">
+        <label>Text</label>
+        <textarea id="TemplateText" ng-model="TemplateText"></textarea>
+    </div>
+    <div class="nui-form-group">
+        <!-- save / add post button -->
+        <button style="margin-left:20px;" class="nui-highlight-button nui-highlight" ng-click="TemplateAction()">{{TemplateActionDescriptor()}}</button>
+    </div>
+
+</div>

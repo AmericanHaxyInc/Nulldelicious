@@ -257,6 +257,26 @@ var root = {};
         self.siteId = siteId;
     });
 
+    /*theme constructoor */
+
+
+
+    root.Theme = (function(id, name, text, parameters, siteId)
+    {
+        var self = this;
+        if(!id) {
+            self.id = hx$.Guid();
+        }
+        else
+        {
+            self.id = id;
+        }
+        self.name = name;
+        self.text = text;
+        self.parameters = parameters;
+        self.siteId = siteId;
+    });
+
     root.GetSites = (function(token, store, args)
     {
         //if a query has not been specified, retrieve all sites

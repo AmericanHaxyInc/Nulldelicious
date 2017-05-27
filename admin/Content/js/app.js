@@ -1288,4 +1288,5 @@ NullDelicious.config(['$routeProvider',
             .when('/Images',{templateUrl: 'Images.html', controller: "Images"})
             .when('/Roles', {templateUrl: 'Roles.html', controller: "Roles"})
             .when('/Scripts', {templateUrl: 'Scripts.html', controller: "Scripts"})
+            .when('/Templates', {templateUrl: 'Templates.html', controller: "Templates"})
     }]);

@@ -131,6 +131,17 @@ middleWare.then(function (middlewareResult) {
         };
         res.status(200).send(JSON.stringify(response));
     });
+    
+//mounted endpoint for retrieving compiled templates from the server
+    app.get('/theme/resolve/:identification', function(req, res){
+        hx$.log('call to resolve theme with id : ' + req.params.identification);
+        //authenticate with the same level of access as theme get to control this ednpoint
+        ndcore.authentication.authenticate(req.headers, 'theme', 'get', res).then(function(principal)
+        {
+            var theme = ndcore.ResolveTheme(req.params.identification, principal);
+            res.status(200).send(JSON.stringify(theme));
+        });
+    });
 
 
 //mount all get requests for models
