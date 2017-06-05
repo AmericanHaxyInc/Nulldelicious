@@ -140,6 +140,9 @@ middleWare.then(function (middlewareResult) {
         {
             var theme = ndcore.ResolveTheme(req.params.identification, principal);
             res.status(200).send(JSON.stringify(theme));
+        }).catch(function (error)
+        {
+            handleError(error, res);
         });
     });
 
