@@ -1,0 +1,39 @@
+{
+  "name": "nulldelicious",
+  "version": "1.0.0",
+  "description": "Simple CMS using NodeJs",
+  "main": "Index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AmericanHaxyInc/Nulldelicious.git"
+  },
+  "keywords": [
+    "cms",
+    "simple",
+    "code",
+    "editor"
+  ],
+  "author": "David Dworetzky",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AmericanHaxyInc/Nulldelicious/issues"
+  },
+  "homepage": "https://github.com/AmericanHaxyInc/Nulldelicious#readme",
+  "dependencies":{
+    "express" : "latest",
+    "body-parser" : "latest",
+    "haxyclosures" : "latest",
+    "body-parser" : "latest",
+    "multer" : "latest",
+    "mongoose" : "latest",
+    "underscore" : "latest",
+    "q" : "latest",
+    "moment" : "latest",
+    "jsonwebtoken" : "latest",
+    "node-uuid" : "latest",
+    "atob" : "latest"
+  }
+}
