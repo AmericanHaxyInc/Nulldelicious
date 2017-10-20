@@ -36,7 +36,7 @@ var admin = runScript('./Admin/Content/Index.js', function (err) {
     if (err) throw err;
     console.log(err);
 });
-
+//exit hook to kill child processes
 process.on('exit', function () {
     console.log('Process exiting. Killing server and admin \n');
     server.kill();
