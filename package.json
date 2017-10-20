@@ -14,7 +14,8 @@
     "cms",
     "simple",
     "code",
-    "editor"
+    "editor",
+    "blog"
   ],
   "author": "David Dworetzky",
   "license": "MIT",
