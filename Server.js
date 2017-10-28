@@ -25,17 +25,17 @@ function runScript(scriptPath, callback) {
     //returns process handle
     return process;
 }
-
-//spawn a child process for our server 
-var server = runScript('./Index.js', function (err) {
-    if (err) throw err;
-    console.log(err);
-});
 //spawn a child process for our admin
 var admin = runScript('./Admin/Content/Index.js', function (err) {
     if (err) throw err;
     console.log(err);
 });
+//spawn a child process for our server 
+var server = runScript('./Index.js', function (err) {
+    if (err) throw err;
+    console.log(err);
+});
+
 //exit hook to kill child processes
 process.on('exit', function () {
     console.log('Process exiting. Killing server and admin \n');
