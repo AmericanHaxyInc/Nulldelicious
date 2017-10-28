@@ -2,7 +2,8 @@
  * Created by David on 12/22/2015.
  */
 /* Static express hosting of admin console */
-
+console.log("Changing to directory" + __dirname);
+process.chdir(__dirname);
 console.log("Starting nulldelicious admin");
 var fs = require('fs');
 var express = require('express');
