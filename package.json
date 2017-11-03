@@ -4,7 +4,8 @@
   "description": "Simple CMS using NodeJs",
   "main": "Index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "debug" : "node --nolazy --inspect Server.js"
   },
   "repository": {
     "type": "git",

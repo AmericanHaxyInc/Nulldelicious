@@ -974,6 +974,7 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
         {field: 'first', displayName: 'First Name'},
         {field: 'last', displayName: 'Last Name'},
         {field: 'email', displayName: 'Email'},
+        {field: 'phone', displayName: 'Phone'},
         {field: 'gender', displayName: 'Gender'},
         {field: 'Delete', cellTemplate: deleteTemplate}
     ];
@@ -1022,7 +1023,7 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
     $scope.UserAction = (function () {
         //add state
         if ($scope.UserActionState == userStates.Add) {
-            var user = new nui.User(null, $scope.Username, $scope.FirstName, $scope.LastName, $scope.Email, $scope.SelectedGender, $scope.Password, $scope.SelectedSiteId, $scope.SelectedRole.id);
+            var user = new nui.User(null, $scope.Username, $scope.FirstName, $scope.LastName, $scope.Email, $scope.SelectedGender, $scope.Password, $scope.Phone, $scope.SelectedSiteId, $scope.SelectedRole.id);
             $scope.DataManager.Set('User', user).then(function (data) {
                 $scope.UsersData.data.push(data);
                 $scope.$apply();
@@ -1030,7 +1031,7 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
         }
         //save state
         else if ($scope.UserActionState == userStates.Save) {
-            var user = new nui.User($scope.SelectedUser.id, $scope.Username, $scope.FirstName, $scope.LastName, $scope.Email, $scope.SelectedGender, $scope.Password, $scope.SelectedSiteId, $scope.SelectedRole.id);
+            var user = new nui.User($scope.SelectedUser.id, $scope.Username, $scope.FirstName, $scope.LastName, $scope.Email, $scope.SelectedGender, $scope.Password, $scope.Phone, $scope.SelectedSiteId, $scope.SelectedRole.id);
             $scope.DataManager.Set('User', user).then(function (data) {
                 //on save, modify the element in the grid
                 var gridUser = hx$.single($scope.UsersData.data, function (usr) {
@@ -1087,6 +1088,7 @@ var Users = NullDelicious.controller("Users", function ($scope, $http, $localSto
             $scope.Email = $scope.SelectedUser.email;
             $scope.SelectedGender = $scope.SelectedUser.gender;
             $scope.Password = $scope.SelectedUser.password;
+            $scope.Phone = $scope.SelectedUser.phone;
             $scope.SelectedRole = hx$.single($scope.UserRoles, function(data)
             {
                 return data.id === $scope.SelectedUser.roleId;

@@ -183,7 +183,7 @@ var root = {};
 
     /*user constructor */
 
-    root.User = (function(id, name, first, last, email, gender, password, siteId, roleId){
+    root.User = (function(id, name, first, last, email, gender, password, phone, siteId, roleId){
         var self = this;
         if(!id) {
             self.id = hx$.Guid();
@@ -200,6 +200,7 @@ var root = {};
         self.password = password;
         self.siteId = siteId;
         self.roleId = roleId;
+        self.phone = phone;
     });
 
     /*image constructor */
