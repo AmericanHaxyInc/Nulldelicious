@@ -1277,6 +1277,122 @@ var Roles = NullDelicious.controller("Roles", function ($scope, $http, $localSto
         });
     };
 });
+
+//Template controller -> controls which templates are active on our site. Retrieves themes from storage
+var template = NullDelicious.controller("Template", function ($scope, $http, $localStorage, $sessionStorage, $route, $routeParams, $location){
+    $scope.nui = nui;
+        var templateStates =
+        {
+            Add: 0,
+            Save: 1
+        };
+    
+        //default state is add
+        $scope.TemplateActionState = templateStates.Add;
+        $scope.TemplateActionDescriptor = (function () {
+            return hx$.GetKeyByValue(templateStates, $scope.TemplateActionState) + ' Template';
+        });
+    
+        var deleteTemplate = nui.ui.deleteTemplate;
+    
+        $scope.TemplateColumns = [{field: 'name', displayName: 'Name'},
+            {field: 'text', displayName: 'Text'},
+            {field: 'parameters', displayName: 'Parameters'},
+            {field: 'Delete', cellTemplate: deleteTemplate}
+        ];
+    
+        $scope.TemplateData = {
+            data: $scope.Templates,
+            columnDefs: $scope.TemplateColumns,
+            enableRowSelection: true,
+            enableSelectAll: false,
+            selectionRowHeaderWidth: 35,
+            multiSelect: false
+        };
+    
+        $scope.GetTemplates = (function () {
+            if ($scope.DataManager) {
+                $scope.DataManager.Get('Theme', {
+                    query: {key: 'siteId', value: $scope.SelectedSiteId}
+                }).then(function (data) {
+                    if (data.length > 0) {
+                        $scope.Templates = data;
+                        $scope.TemplateData.data = $scope.Templates;
+                        $scope.$apply();
+                    }
+                });
+            }
+        });
+
+        //callbacks
+
+        //template save/write action
+    $scope.TemplateAction = (function () {
+        //add state
+        if ($scope.TemplateActionState == templateStates.Add) {
+            var theme = new nui.Theme(null, $scope.TemplateText, $scope.TemplateName, $scope.TemplateText, null, $scope.SelectedSiteId);
+            $scope.DataManager.Set('Theme', theme).then(function (data) {
+                $scope.TemplateData.data.push(data);
+                $scope.$apply();
+            });
+        }
+        //save state
+        else if ($scope.TemplateActionState == templateStates.Save) {
+            var theme = new nui.Theme($scope.SelectedTemplateId, $scope.TemplateText, $scope.TemplateName, $scope.TemplateText, null, $scope.SelectedSiteId);
+            $scope.DataManager.Set('Theme', theme).then(function (data) {
+                //on save, modify the element in the grid
+                var gridTemplate = hx$.single($scope.TemplateData.data, function (rl) {
+                    return rl.id == $scope.SelectedTemplateId;
+                });
+                gridTemplate = data;
+                $scope.$apply();
+            });
+        }
+
+    });
+
+    //grid row removal
+    $scope.RemoveRow = function(element) {
+        var self = this;
+        var targetRow = element.$parent.$parent.row;
+        var targetId = targetRow.entity.id;
+        //now get the index of the element that we wish to remove in our collection, and
+        //delete it on the server
+        var templateToDelete = hx$.single($scope.TemplateData.data, function (template) {
+            return template.id === targetId;
+        });
+
+        $scope.DataManager.Delete('Template', templateToDelete).then(function (result) {
+            //now, remove the element from our grid
+            var index = $scope.TemplateData.data.indexOf(templateToDelete);
+            $scope.TemplateData.data.splice(index, 1);
+            $scope.$apply();
+        }).fail(function (error) {
+            $scope.DeleteError = true;
+            toastr["error"](error);
+            $scope.$apply();
+        });
+    };
+
+    //get templates
+    $scope.GetTemplates();
+
+    //register grid API's
+    $scope.TemplateData.onRegisterApi = function (gridApi) {
+        //set gridApi on scope
+        $scope.gridApi = gridApi;
+
+        gridApi.selection.on.rowSelectionChanged($scope, function (row) {
+            //this is where we set our currently selected row in scope
+            $scope.SelectedTemplate = row.entity;
+            $scope.TemplateName = $scope.SelectedTemplate.name;
+            $scope.SelectedTemplateId = row.entity.id;
+
+            $scope.TemplateActionState = templateStates.Save;
+        });
+    }
+});
+
 NullDelicious.config(['$routeProvider',
     function($routeProvider, $locationProvider){
         $routeProvider.when('/Editor', {
@@ -1288,5 +1404,5 @@ NullDelicious.config(['$routeProvider',
             .when('/Images',{templateUrl: 'Images.html', controller: "Images"})
             .when('/Roles', {templateUrl: 'Roles.html', controller: "Roles"})
             .when('/Scripts', {templateUrl: 'Scripts.html', controller: "Scripts"})
-            .when('/Templates', {templateUrl: 'Templates.html', controller: "Templates"})
+            .when('/Templates', {templateUrl: 'Template.html', controller: "Template"})
     }]);
